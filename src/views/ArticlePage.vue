@@ -51,9 +51,11 @@
       <v-navigation-drawer v-model="userdrawer" app temporary right>
         <template v-slot:prepend>
           <v-list-item two-line>
+            <!--
             <v-list-item-avatar>
               <img src="https://randomuser.me/api/portraits/women/81.jpg" />
             </v-list-item-avatar>
+            -->
 
             <v-list-item-content>
               <v-list-item-title>Jane Smith</v-list-item-title>
@@ -78,7 +80,7 @@
 
         <template v-slot:append>
           <div class="pa-2">
-            <v-btn block>Logout</v-btn>
+            <v-btn block @click="dialog = !dialog">Logout</v-btn>
           </div>
         </template>
       </v-navigation-drawer>
@@ -113,9 +115,9 @@
         <v-row>
           <v-col cols="12" sm="9" md="9" lg="9" xl="9">
             <v-tabs v-model="tab" background-color="gray" class="elevation-2" dark>
-              <v-tab :href="tab_article">页面</v-tab>
-              <v-tab :href="tab_issue">讨论</v-tab>
-              <v-tab-item :value="tab_article">
+              <v-tab>页面</v-tab>
+              <v-tab>讨论</v-tab>
+              <v-tab-item>
                 <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
                   <v-card-title class="display-2">{{ article.title }}</v-card-title>
                   <v-card-subtitle class="pb-0">Paradox 于3天前 修改了 此页面</v-card-subtitle>
@@ -127,7 +129,7 @@
                   </v-card-text>
                 </v-card>
               </v-tab-item>
-              <v-tab-item :value="tab_issue"></v-tab-item>
+              <v-tab-item></v-tab-item>
             </v-tabs>
           </v-col>
           <v-col>
@@ -164,6 +166,43 @@
       {{ new Date().getFullYear() }} —
       <strong>Vuetify</strong>
     </v-footer>
+
+    <v-dialog v-model="dialog" max-width="500">
+      
+            <v-card class="elevation-12">
+              <v-toolbar
+                color="primary"
+                dark
+                flat
+              >
+                <v-toolbar-title>用户登录</v-toolbar-title>
+                <v-spacer />
+              </v-toolbar>
+              <v-card-text style="padding:16px;">
+                <v-form>
+                  <v-text-field
+                    label="用户名"
+                    name="login"
+                    prepend-icon="mdi-account"
+                    type="text"
+                    v-model="loginInfo.u_name"
+                  />
+                  <v-text-field
+                    id="password"
+                    label="密码"
+                    name="password"
+                    prepend-icon="mdi-lock"
+                    type="password"
+                    v-model="loginInfo.u_password"
+                  />
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn color="primary" v-on:click="userLogin()">登陆</v-btn>
+              </v-card-actions>
+            </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -178,13 +217,25 @@ export default {
   data: () => ({
     drawer: false,
     userdrawer: false,
+    dialog: false,
     // 词条信息
     article: {
       title: null,
       text: null,
       category: "高等数学",
       create_time: null,
-      banner: '<div class="v-banner v-sheet v-sheet--tile theme--light v-banner--has-icon v-banner--is-mobile v-banner--single-line"><div class="v-banner__wrapper"><div class="v-banner__content"><div class="v-avatar v-banner__icon" style="height: 40px; min-width: 40px; width: 40px;"><div class="v-avatar blue lighten-1" style="height: 40px; min-width: 40px; width: 40px;"><i aria-hidden="true" icon="mdi-tag-faces" class="v-icon notranslate mdi mdi-tag-faces theme--light white--text"></i></div></div><div class="v-banner__text">这篇文章需要改进。你可以帮助维基来编辑它。</div></div></div></div>'
+      banner:
+        '<div class="v-banner v-sheet v-sheet--tile theme--light v-banner--has-icon v-banner--is-mobile v-banner--single-line"><div class="v-banner__wrapper"><div class="v-banner__content"><div class="v-avatar v-banner__icon" style="height: 40px; min-width: 40px; width: 40px;"><div class="v-avatar blue lighten-1" style="height: 40px; min-width: 40px; width: 40px;"><i aria-hidden="true" icon="mdi-tag-faces" class="v-icon notranslate mdi mdi-tag-faces theme--light white--text"></i></div></div><div class="v-banner__text">这篇文章需要改进。你可以帮助维基来编辑它。</div></div></div></div>'
+    },
+    // 登陆信息
+    loginInfo: {
+      u_name: null,
+      u_password: null
+    },
+    // 用户信息
+    user: {
+      is_login: false,
+      username: null,
     },
     items: [
       { title: "Home", icon: "mdi-home-city" },
@@ -202,13 +253,22 @@ export default {
     getArticleInfo: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/articles/" + this.$route.params.category_name + "/" + this.$route.params.article_name
+          "http://127.0.0.1:8000/api/articles/" +
+            this.$route.params.category_name +
+            "/" +
+            this.$route.params.article_name
         )
         .then(res => {
           console.log(res.data);
-          this.article.title = res.data['a_title']
-          this.article.text = res.data['a_text']
+          this.article.title = res.data["a_title"];
+          this.article.text = res.data["a_text"];
         });
+    },
+    userLogin: function() {
+      let postData = {u_name: this.loginInfo.u_name, u_password: this.loginInfo.u_password}
+      axios
+        .post("http://127.0.0.1:8000/api/user_login", postData)
+        .then(res => console.log(res.data))
     }
   }
 };
