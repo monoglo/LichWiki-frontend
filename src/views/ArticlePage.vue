@@ -87,7 +87,7 @@
             <v-btn dark block @click="loginForm = !loginForm">登陆</v-btn>
           </div>
           <div class="pa-2">
-            <v-btn color="light-blue lighten-5" block @click="loginForm = !loginForm">注册</v-btn>
+            <v-btn color="light-blue lighten-5" block @click="registerForm = !registerForm">注册</v-btn>
           </div>
         </template>
         <template v-slot:append v-else>
@@ -116,9 +116,18 @@
           rounded
         ></v-text-field>
 
-        <v-btn icon>
-          <v-icon @click.stop="userdrawer = !userdrawer">mdi-account-circle</v-icon>
-        </v-btn>
+        <v-badge
+          :value="Boolean(user.is_login)"
+          bottom
+          color="primary"
+          dot
+          offset-x="10"
+          offset-y="10"
+        >
+          <v-btn icon>
+            <v-icon @click.stop="userdrawer = !userdrawer">mdi-account-circle</v-icon>
+          </v-btn>
+        </v-badge>
       </v-app-bar>
     </div>
     <!-- 主体内容区块-->
@@ -189,7 +198,7 @@
           <v-form>
             <v-text-field
               label="用户名"
-              name="login"
+              name="username"
               prepend-icon="mdi-account"
               type="text"
               v-model="loginInfo.u_name"
@@ -210,6 +219,53 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <!-- 注册表单 -->
+    <v-dialog v-model="registerForm" max-width="500">
+      <v-card class="elevation-12">
+        <v-toolbar color="primary" dark flat>
+          <v-toolbar-title>用户注册</v-toolbar-title>
+          <v-spacer />
+        </v-toolbar>
+        <v-card-text style="padding:16px;">
+          <v-form>
+            <v-text-field
+              label="邮箱"
+              name="email"
+              prepend-icon="mdi-email"
+              type="email"
+              v-model="registerInfo.u_email"
+            />
+            <v-text-field
+              label="用户名"
+              name="username"
+              prepend-icon="mdi-account"
+              type="text"
+              v-model="registerInfo.u_name"
+            />
+            <v-text-field
+              id="password"
+              label="密码"
+              name="password"
+              prepend-icon="mdi-lock"
+              type="password"
+              v-model="registerInfo.u_password"
+            />
+            <v-text-field
+              id="re-password"
+              label="再次输入密码"
+              name="re_password"
+              prepend-icon="mdi-lock"
+              type="password"
+              v-model="registerInfo.u_re_password"
+            />
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="primary" v-on:click="userRegister()">注册</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <!-- snackbar 提示框-->
     <v-snackbar
       v-model="snackbarInfo.snackbar"
@@ -223,7 +279,13 @@
       :vertical="snackbarInfo.vertical"
     >
       {{ snackbarInfo.text }}
-      <v-btn dark text @click="this.reload()">{{ snackbarInfo.buttonText }}</v-btn>
+      <v-btn v-if="snackbarInfo.refresh" dark text @click="reload()">{{ snackbarInfo.buttonText }}</v-btn>
+      <v-btn
+        v-else
+        dark
+        text
+        @click="snackbarInfo.snackbar = !snackbarInfo.snackbar"
+      >{{ snackbarInfo.buttonText }}</v-btn>
     </v-snackbar>
   </v-app>
 </template>
@@ -241,6 +303,7 @@ export default {
     drawer: false,
     userdrawer: false,
     loginForm: false,
+    registerForm: false,
     snackbarInfo: {
       snackbar: false,
       bottom: false,
@@ -250,22 +313,21 @@ export default {
       right: false,
       timeout: "6000",
       top: false,
-      vertical: false,
+      vertical: false
     },
     // 词条信息
     article: {
       title: null,
       text: null,
-      category: "高等数学",
+      category: null,
       create_time: null,
       banner:
         '<div class="v-banner v-sheet v-sheet--tile theme--light v-banner--has-icon v-banner--is-mobile v-banner--single-line"><div class="v-banner__wrapper"><div class="v-banner__content"><div class="v-avatar v-banner__icon" style="height: 40px; min-width: 40px; width: 40px;"><div class="v-avatar blue lighten-1" style="height: 40px; min-width: 40px; width: 40px;"><i aria-hidden="true" icon="mdi-tag-faces" class="v-icon notranslate mdi mdi-tag-faces theme--light white--text"></i></div></div><div class="v-banner__text">这篇文章需要改进。你可以帮助维基来编辑它。</div></div></div></div>'
     },
+    // 注册信息
+    registerInfo: {},
     // 登陆信息
-    loginInfo: {
-      u_name: null,
-      u_password: null
-    },
+    loginInfo: {},
     // 用户信息
     user: {},
     items: [
@@ -280,9 +342,15 @@ export default {
   created() {
     this.getArticleInfo();
     this.getSessionInfo();
+    this.getInfoFromURL();
   },
   methods: {
+    test: function() {
+      console.info("test active!");
+      console.info(this.$route.path.split("/")[1]);
+    },
     getSessionInfo: function() {
+      // 预处理，获取session信息，登录相关
       if (sessionStorage.getItem("is_login")) {
         this.user.is_login = sessionStorage.getItem("is_login");
         this.user.u_email = sessionStorage.getItem("u_email");
@@ -303,6 +371,41 @@ export default {
           console.log(res.data);
           this.article.title = res.data["a_title"];
           this.article.text = res.data["a_text"];
+        });
+    },
+    getInfoFromURL: function() {
+      this.article.category = this.$route.path.split("/")[2];
+      this.article.title = this.$route.path.split("/")[3];
+    },
+    userRegister: function() {
+      let postData = {
+        u_email: this.registerInfo.u_email,
+        u_name: this.registerInfo.u_name,
+        u_password: this.registerInfo.u_password
+      };
+      axios
+        .post("http://127.0.0.1:8000/api/users/", postData)
+        .then(response => {
+          if (response.data) {
+            this.snackbarInfo.text = "注册成功！即将刷新页面...";
+            this.snackbarInfo.buttonText = "立即刷新";
+            this.snackbarInfo.color = "primary";
+            this.snackbarInfo.top = true;
+            this.snackbarInfo.vertical = true;
+            this.snackbarInfo.refresh = true;
+            this.snackbarInfo.snackbar = true;
+
+            setTimeout(() => {
+              this.reload();
+            }, 3000);
+          } else {
+            this.snackbarInfo.text = "注册失败，请再次尝试！";
+            this.snackbarInfo.buttonText = "确定";
+            this.snackbarInfo.color = "error";
+            this.snackbarInfo.top = true;
+            this.snackbarInfo.vertical = true;
+            this.snackbarInfo.snackbar = true;
+          }
         });
     },
     userLogin: function() {
@@ -331,30 +434,48 @@ export default {
             this.snackbarInfo.color = "success";
             this.snackbarInfo.top = true;
             this.snackbarInfo.vertical = true;
+            this.snackbarInfo.refresh = true;
             this.snackbarInfo.snackbar = true;
             //console.log(this.user)
             //this.reload()
             setTimeout(() => {
               this.reload();
-            }, 2000);
+            }, 3000);
+          } else {
+            this.snackbarInfo.text = "用户名或密码错误！";
+            this.snackbarInfo.buttonText = "确定";
+            this.snackbarInfo.color = "error";
+            this.snackbarInfo.top = true;
+            this.snackbarInfo.vertical = true;
+            this.snackbarInfo.snackbar = true;
           }
         });
     },
     userLogout: function() {
       //post foo
-      this.snackbarInfo.text = "已退出！即将刷新页面...";
-      this.snackbarInfo.buttonText = "立即刷新";
-      this.snackbarInfo.color = "error";
-      this.snackbarInfo.top = true;
-      this.snackbarInfo.vertical = true;
-      this.snackbarInfo.snackbar = true;
+      let postData = {};
+      axios
+        .post("http://127.0.0.1:8000/api/user_logout", postData)
+        .then(response => {
+          if (response.data["code"] == 1000) {
+            this.snackbarInfo.text = "已退出！即将刷新页面...";
+            this.snackbarInfo.buttonText = "立即刷新";
+            this.snackbarInfo.color = "error";
+            //this.snackbarInfo.top = true;
+            this.snackbarInfo.vertical = true;
+            this.snackbarInfo.refresh = true;
+            this.snackbarInfo.snackbar = true;
 
-      this.userdrawer = false;
-      sessionStorage.clear();
+            this.userdrawer = false;
+            sessionStorage.clear();
 
-      //console.log(this.user)
-      //this.reload()
-      setTimeout(() => {this.reload(); }, 2000)
+            //console.log(this.user)
+            //this.reload()
+            setTimeout(() => {
+              this.reload();
+            }, 3000);
+          }
+        });
     }
   }
 };
