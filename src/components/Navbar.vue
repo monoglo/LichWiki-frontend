@@ -1,6 +1,49 @@
 <template>
   <div>
     <!-- 左侧边栏（词条侧边栏）-->
+    <v-navigation-drawer v-model="drawer" app temporary>
+      <v-list-item link @click="goChildPage('/')">
+        <v-list-item-content>
+          <v-list-item-title class="title">{{ article.title }}</v-list-item-title>
+          <v-list-item-subtitle>{{ article.category }}</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-divider></v-divider>
+      <v-list dense>
+        <v-list-item link @click="goChildPage('/source')">
+          <v-list-item-action>
+            <v-icon>mdi-code-json</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>查看源代码</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link @click="goChildPage('/edit')">
+          <v-list-item-action>
+            <v-icon>mdi-file-document-edit-outline</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>编辑词条</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link @click="goChildPage('/history')">
+          <v-list-item-action>
+            <v-icon>mdi-history</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>词条修改历史</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link @click="goPage('/newarticle')">
+          <v-list-item-action>
+            <v-icon>mdi-book-plus-multiple-outline</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>新建词条</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
     <!-- 右侧边栏（用户侧边栏）-->
     <v-navigation-drawer v-model="userdrawer" app temporary right>
       <template v-slot:prepend>
@@ -10,7 +53,6 @@
               <img src="https://randomuser.me/api/portraits/women/81.jpg" />
             </v-list-item-avatar>
           -->
-
           <v-list-item-content v-if="!user.is_login">
             <v-list-item-title>游客</v-list-item-title>
             <v-list-item-subtitle>未登录</v-list-item-subtitle>
@@ -21,21 +63,17 @@
           </v-list-item-content>
         </v-list-item>
       </template>
-
       <v-divider></v-divider>
-
       <v-list dense>
         <v-list-item v-for="item in items" :key="item.title" link>
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-icon>
-
           <v-list-item-content>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
-
       <template v-slot:append v-if="!user.is_login">
         <div class="pa-2">
           <v-btn dark block @click="loginForm = !loginForm">登陆</v-btn>
@@ -52,11 +90,9 @@
     </v-navigation-drawer>
     <!-- 顶部导航栏-->
     <v-app-bar app dark hide-on-scroll>
-      <v-app-bar-nav-icon @click.stop="showDrawer()" />
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>LichWiki 大学维基</v-toolbar-title>
-
       <v-spacer></v-spacer>
-
       <v-text-field
         class="d-none d-sm-flex"
         flat
@@ -69,7 +105,6 @@
         filled
         rounded
       ></v-text-field>
-
       <v-badge
         :value="Boolean(user.is_login)"
         bottom
@@ -78,11 +113,12 @@
         offset-x="10"
         offset-y="10"
       >
-        <v-btn icon>
-          <v-icon @click.stop="userdrawer = !userdrawer">mdi-account-circle</v-icon>
+        <v-btn icon @click.stop="userdrawer = !userdrawer">
+          <v-icon>mdi-account-circle</v-icon>
         </v-btn>
       </v-badge>
     </v-app-bar>
+    <!-- 登陆表单 -->
     <v-dialog v-model="loginForm" max-width="500">
       <v-card class="elevation-12">
         <v-toolbar color="primary" dark flat>
@@ -174,9 +210,7 @@
       :vertical="snackbarInfo.vertical"
     >
       {{ snackbarInfo.text }}
-      <v-btn v-if="snackbarInfo.refresh" dark text @click="reload()">{{ snackbarInfo.buttonText }}</v-btn>
       <v-btn
-        v-else
         dark
         text
         @click="snackbarInfo.snackbar = !snackbarInfo.snackbar"
@@ -192,6 +226,7 @@ export default {
   name: "navbar",
   inject: ["reload"],
   data: () => ({
+    drawer: false,
     userdrawer: false,
     loginForm: false,
     registerForm: false,
@@ -207,6 +242,7 @@ export default {
       vertical: false
     },
     // 词条信息
+    article: {},
     // 注册信息
     registerInfo: {},
     // 登陆信息
@@ -224,6 +260,7 @@ export default {
   }),
   created() {
     this.getSessionInfo();
+    this.getInfoFromURL();
   },
   methods: {
     test: function() {
@@ -231,7 +268,7 @@ export default {
       console.info(this.$route.path.split("/")[1]);
     },
     showDrawer: function() {
-      this.$emit('showDrawer')
+      this.$emit("showDrawer");
     },
     getSessionInfo: function() {
       // 预处理，获取session信息，登录相关
@@ -243,6 +280,21 @@ export default {
         this.user.u_register_time = sessionStorage.getItem("u_register_time");
       }
     },
+    getInfoFromURL: function() {
+      this.article.category = this.$route.path.split("/")[2];
+      this.article.title = this.$route.path.split("/")[3];
+    },
+    goChildPage: function(url){
+      // 跳转到子页面
+      // console.info(this.$route.params['article_name'])
+      this.$router.push({path:'/article/'+ this.$route.params['category_name'] + '/' + this.$route.params['article_name'] + url}).catch(err => {console.info(err)})
+      this.reload();
+    },
+    goPage: function(url){
+      // 跳转到指定页面
+      this.$router.push({path:url})
+      this.reload();
+    },
     userRegister: function() {
       let postData = {
         u_email: this.registerInfo.u_email,
@@ -253,14 +305,19 @@ export default {
         .post("http://127.0.0.1:8000/api/users/", postData)
         .then(response => {
           if (response.data) {
-            this.snackbarInfo.text = "注册成功！即将刷新页面...";
-            this.snackbarInfo.buttonText = "立即刷新";
+            this.snackbarInfo.text = "注册成功！3秒后刷新页面...";
+            this.snackbarInfo.buttonText = "确定";
             this.snackbarInfo.color = "primary";
             this.snackbarInfo.top = true;
             this.snackbarInfo.vertical = true;
-            this.snackbarInfo.refresh = true;
+            //this.snackbarInfo.refresh = true;
             this.snackbarInfo.snackbar = true;
-
+            setTimeout(() => {
+              this.snackbarInfo.text = "注册成功！2秒后刷新页面...";
+            }, 1000);
+            setTimeout(() => {
+              this.snackbarInfo.text = "注册成功！1秒后刷新页面...";
+            }, 1000);
             setTimeout(() => {
               this.reload();
             }, 3000);
@@ -295,15 +352,25 @@ export default {
             this.user = response.data["data"];
             this.user.is_login = true;
 
-            this.snackbarInfo.text = "登录成功！即将刷新页面...";
-            this.snackbarInfo.buttonText = "立即刷新";
+            this.snackbarInfo.text = "登录成功！3秒后刷新页面...";
+            this.snackbarInfo.buttonText = "确定";
             this.snackbarInfo.color = "success";
             this.snackbarInfo.top = true;
             this.snackbarInfo.vertical = true;
-            this.snackbarInfo.refresh = true;
+            //this.snackbarInfo.refresh = true;
             this.snackbarInfo.snackbar = true;
             //console.log(this.user)
             //this.reload()
+            setTimeout(() => {
+              this.snackbarInfo.text = "登录成功！2秒后刷新页面...";
+              this.snackbarInfo.snackbar = false;
+              this.snackbarInfo.snackbar = true;
+            }, 1000);
+            setTimeout(() => {
+              this.snackbarInfo.text = "登录成功！1秒后刷新页面...";
+              this.snackbarInfo.snackbar = false;
+              this.snackbarInfo.snackbar = true;
+            }, 2000);
             setTimeout(() => {
               this.reload();
             }, 3000);
@@ -324,12 +391,12 @@ export default {
         .post("http://127.0.0.1:8000/api/user_logout", postData)
         .then(response => {
           if (response.data["code"] == 1000) {
-            this.snackbarInfo.text = "已退出！即将刷新页面...";
-            this.snackbarInfo.buttonText = "立即刷新";
+            this.snackbarInfo.text = "已退出！3秒后刷新页面...";
+            this.snackbarInfo.buttonText = "确定";
             this.snackbarInfo.color = "error";
             //this.snackbarInfo.top = true;
             this.snackbarInfo.vertical = true;
-            this.snackbarInfo.refresh = true;
+            //this.snackbarInfo.refresh = true;
             this.snackbarInfo.snackbar = true;
 
             this.userdrawer = false;
@@ -338,11 +405,21 @@ export default {
             //console.log(this.user)
             //this.reload()
             setTimeout(() => {
+              this.snackbarInfo.text = "已退出！2秒后刷新页面...";
+              this.snackbarInfo.snackbar = false;
+              this.snackbarInfo.snackbar = true;
+            }, 1000);
+            setTimeout(() => {
+              this.snackbarInfo.text = "已退出！1秒后刷新页面...";
+              this.snackbarInfo.snackbar = false;
+              this.snackbarInfo.snackbar = true;
+            }, 2000);
+            setTimeout(() => {
               this.reload();
             }, 3000);
           }
         });
-    }
+    },
   }
 };
 </script>

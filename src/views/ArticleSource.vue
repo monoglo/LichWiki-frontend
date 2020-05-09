@@ -1,174 +1,18 @@
 <template>
-  <v-app>
-    <div id="navbar">
-      <!-- 左侧边栏（词条侧边栏）-->
-      <v-navigation-drawer v-model="drawer" app temporary>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title class="title">{{ article.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ article.category }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-divider></v-divider>
-
-        <v-list dense>
-          <v-list-item link>
-            <v-list-item-action>
-              <v-icon>mdi-code-json</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>查看源代码</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-action>
-              <v-icon>mdi-file-document-edit-outline</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>编辑词条</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-action>
-              <v-icon>mdi-history</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>词条修改历史</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-action>
-              <v-icon>mdi-book-plus-multiple-outline</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>新建词条</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-      <!-- 右侧边栏（用户侧边栏）-->
-      <v-navigation-drawer v-model="userdrawer" app temporary right>
-        <template v-slot:prepend>
-          <v-list-item two-line>
-            <v-list-item-avatar>
-              <img src="https://randomuser.me/api/portraits/women/81.jpg" />
-            </v-list-item-avatar>
-
-            <v-list-item-content>
-              <v-list-item-title>Jane Smith</v-list-item-title>
-              <v-list-item-subtitle>Logged In</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </template>
-
-        <v-divider></v-divider>
-
-        <v-list dense>
-          <v-list-item v-for="item in items" :key="item.title" link>
-            <v-list-item-icon>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
-
-            <v-list-item-content>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-
-        <template v-slot:append>
-          <div class="pa-2">
-            <v-btn block @click="overlay = !overlay">Logout</v-btn>
-          </div>
-        </template>
-      </v-navigation-drawer>
-      <!-- 顶部导航栏-->
-      <v-app-bar app dark hide-on-scroll>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-        <v-toolbar-title>LichWiki 大学维基</v-toolbar-title>
-
-        <v-spacer></v-spacer>
-
-        <v-text-field
-          class="d-none d-sm-flex"
-          flat
-          hide-details
-          label="在该学科分类下查找"
-          prepend-inner-icon="mdi-layers-search"
-          solo-inverted
-          dense
-          clearable
-          filled
-          rounded
-        ></v-text-field>
-
-        <v-btn icon>
-          <v-icon @click.stop="userdrawer = !userdrawer">mdi-account-circle</v-icon>
-        </v-btn>
-      </v-app-bar>
-    </div>
-    <v-overlay :value="overlay" :z-index="5">
-      <v-content>
-        <v-container class="fill-height" fluid>
-          <v-row align="center" justify="center">
-            <v-col cols="12" sm="8" md="4">
-              <v-card class="elevation-12">
-                <v-toolbar color="primary" dark flat>
-                  <v-toolbar-title>Login form</v-toolbar-title>
-                  <v-spacer />
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn :href="source" icon large target="_blank" v-on="on">
-                        <v-icon>mdi-code-tags</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>Source</span>
-                  </v-tooltip>
-                  <v-tooltip right>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        large
-                        href="https://codepen.io/johnjleider/pen/pMvGQO"
-                        target="_blank"
-                        v-on="on"
-                      >
-                        <v-icon>mdi-codepen</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>Codepen</span>
-                  </v-tooltip>
-                </v-toolbar>
-                <v-card-text>
-                  <v-form>
-                    <v-text-field label="Login" name="login" prepend-icon="person" type="text" />
-
-                    <v-text-field
-                      id="password"
-                      label="Password"
-                      name="password"
-                      prepend-icon="lock"
-                      type="password"
-                    />
-                  </v-form>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn color="primary">Login</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-content>
-    </v-overlay>
-  </v-app>
+  <div>
+    <navbar></navbar>
+    <h1>This is an article source page</h1>
+  </div>
 </template>
 
 <script>
 import axios from "axios";
+import navbar from "../components/Navbar";
 
 export default {
+  components: {
+    navbar
+  },
   data: () => ({
     drawer: false,
     userdrawer: false,

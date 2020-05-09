@@ -1,56 +1,9 @@
 <template>
   <v-app>
-    <navbar @showDrawer="showDrawer"></navbar>
-    <div>
+    <navbar></navbar>
       <!-- 左侧边栏（词条侧边栏）-->
-      <v-navigation-drawer v-model="drawer" app temporary>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title class="title">{{ article.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ article.category }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-divider></v-divider>
-
-        <v-list dense>
-          <v-list-item link @click="goPage('source')">
-            <v-list-item-action>
-              <v-icon>mdi-code-json</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>查看源代码</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-action>
-              <v-icon>mdi-file-document-edit-outline</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>编辑词条</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-action>
-              <v-icon>mdi-history</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>词条修改历史</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-action>
-              <v-icon>mdi-book-plus-multiple-outline</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>新建词条</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
       <!-- 右侧边栏（用户侧边栏）-->
       <!-- 顶部导航栏-->
-    </div>
     <!-- 主体内容区块-->
     <v-content style="padding: 0px 0px 0px;">
       <v-container fluid>
@@ -116,10 +69,6 @@ export default {
     navbar
   },
   data: () => ({
-    drawer: false,
-    userdrawer: false,
-    loginForm: false,
-    registerForm: false,
     snackbarInfo: {
       snackbar: false,
       bottom: false,
@@ -163,13 +112,6 @@ export default {
     test: function() {
       console.info("test active!");
       console.info(this.$route.path.split("/")[1]);
-    },
-    showDrawer: function(){
-      this.drawer = !this.drawer
-    },
-    goPage: function(url){
-      this.$router.push({path:url})
-      this.reload();
     },
     getArticleInfo: function() {
       axios
