@@ -1,6 +1,7 @@
 <template>
-  <v-app id="inspire">
-    <div id="navbar">
+  <v-app>
+    <navbar @showDrawer="showDrawer"></navbar>
+    <div>
       <!-- 左侧边栏（词条侧边栏）-->
       <v-navigation-drawer v-model="drawer" app temporary>
         <v-list-item>
@@ -13,7 +14,7 @@
         <v-divider></v-divider>
 
         <v-list dense>
-          <v-list-item link>
+          <v-list-item link @click="goPage('source')">
             <v-list-item-action>
               <v-icon>mdi-code-json</v-icon>
             </v-list-item-action>
@@ -48,87 +49,7 @@
         </v-list>
       </v-navigation-drawer>
       <!-- 右侧边栏（用户侧边栏）-->
-      <v-navigation-drawer v-model="userdrawer" app temporary right>
-        <template v-slot:prepend>
-          <v-list-item two-line>
-            <!--
-            <v-list-item-avatar>
-              <img src="https://randomuser.me/api/portraits/women/81.jpg" />
-            </v-list-item-avatar>
-            -->
-
-            <v-list-item-content v-if="!user.is_login">
-              <v-list-item-title>游客</v-list-item-title>
-              <v-list-item-subtitle>未登录</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-content v-else>
-              <v-list-item-title>{{user.u_name}}</v-list-item-title>
-              <v-list-item-subtitle>已登录</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </template>
-
-        <v-divider></v-divider>
-
-        <v-list dense>
-          <v-list-item v-for="item in items" :key="item.title" link>
-            <v-list-item-icon>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
-
-            <v-list-item-content>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-
-        <template v-slot:append v-if="!user.is_login">
-          <div class="pa-2">
-            <v-btn dark block @click="loginForm = !loginForm">登陆</v-btn>
-          </div>
-          <div class="pa-2">
-            <v-btn color="light-blue lighten-5" block @click="registerForm = !registerForm">注册</v-btn>
-          </div>
-        </template>
-        <template v-slot:append v-else>
-          <div class="pa-2">
-            <v-btn color="error" block @click="userLogout()">登出</v-btn>
-          </div>
-        </template>
-      </v-navigation-drawer>
       <!-- 顶部导航栏-->
-      <v-app-bar app dark hide-on-scroll>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-        <v-toolbar-title>LichWiki 大学维基</v-toolbar-title>
-
-        <v-spacer></v-spacer>
-
-        <v-text-field
-          class="d-none d-sm-flex"
-          flat
-          hide-details
-          label="在该学科分类下查找"
-          prepend-inner-icon="mdi-layers-search"
-          solo-inverted
-          dense
-          clearable
-          filled
-          rounded
-        ></v-text-field>
-
-        <v-badge
-          :value="Boolean(user.is_login)"
-          bottom
-          color="primary"
-          dot
-          offset-x="10"
-          offset-y="10"
-        >
-          <v-btn icon>
-            <v-icon @click.stop="userdrawer = !userdrawer">mdi-account-circle</v-icon>
-          </v-btn>
-        </v-badge>
-      </v-app-bar>
     </div>
     <!-- 主体内容区块-->
     <v-content style="padding: 0px 0px 0px;">
@@ -182,123 +103,18 @@
         </v-row>
       </v-container>
     </v-content>
-    <!-- 底部信息栏-->
-    <v-footer dark absolute padless>
-      {{ new Date().getFullYear() }} —
-      <strong>Vuetify</strong>
-    </v-footer>
-
-    <v-dialog v-model="loginForm" max-width="500">
-      <v-card class="elevation-12">
-        <v-toolbar color="primary" dark flat>
-          <v-toolbar-title>用户登录</v-toolbar-title>
-          <v-spacer />
-        </v-toolbar>
-        <v-card-text style="padding:16px;">
-          <v-form>
-            <v-text-field
-              label="用户名"
-              name="username"
-              prepend-icon="mdi-account"
-              type="text"
-              v-model="loginInfo.u_name"
-            />
-            <v-text-field
-              id="password"
-              label="密码"
-              name="password"
-              prepend-icon="mdi-lock"
-              type="password"
-              v-model="loginInfo.u_password"
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="primary" v-on:click="userLogin()">登陆</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <!-- 注册表单 -->
-    <v-dialog v-model="registerForm" max-width="500">
-      <v-card class="elevation-12">
-        <v-toolbar color="primary" dark flat>
-          <v-toolbar-title>用户注册</v-toolbar-title>
-          <v-spacer />
-        </v-toolbar>
-        <v-card-text style="padding:16px;">
-          <v-form>
-            <v-text-field
-              label="邮箱"
-              name="email"
-              prepend-icon="mdi-email"
-              type="email"
-              v-model="registerInfo.u_email"
-            />
-            <v-text-field
-              label="用户名"
-              name="username"
-              prepend-icon="mdi-account"
-              type="text"
-              v-model="registerInfo.u_name"
-            />
-            <v-text-field
-              id="password"
-              label="密码"
-              name="password"
-              prepend-icon="mdi-lock"
-              type="password"
-              v-model="registerInfo.u_password"
-            />
-            <v-text-field
-              id="re-password"
-              label="再次输入密码"
-              name="re_password"
-              prepend-icon="mdi-lock"
-              type="password"
-              v-model="registerInfo.u_re_password"
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="primary" v-on:click="userRegister()">注册</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <!-- snackbar 提示框-->
-    <v-snackbar
-      v-model="snackbarInfo.snackbar"
-      :bottom="snackbarInfo.bottom"
-      :color="snackbarInfo.color"
-      :left="snackbarInfo.left"
-      :multi-line="snackbarInfo.multi_line"
-      :right="snackbarInfo.right"
-      :timeout="6000"
-      :top="snackbarInfo.top"
-      :vertical="snackbarInfo.vertical"
-    >
-      {{ snackbarInfo.text }}
-      <v-btn v-if="snackbarInfo.refresh" dark text @click="reload()">{{ snackbarInfo.buttonText }}</v-btn>
-      <v-btn
-        v-else
-        dark
-        text
-        @click="snackbarInfo.snackbar = !snackbarInfo.snackbar"
-      >{{ snackbarInfo.buttonText }}</v-btn>
-    </v-snackbar>
   </v-app>
 </template>
 
 <script>
 import axios from "axios";
+import navbar from '../components/Navbar'
 
 export default {
   inject: ["reload"],
-  props: {
-    source: String
+  components: {
+    navbar
   },
-
   data: () => ({
     drawer: false,
     userdrawer: false,
@@ -341,7 +157,6 @@ export default {
   }),
   created() {
     this.getArticleInfo();
-    this.getSessionInfo();
     this.getInfoFromURL();
   },
   methods: {
@@ -349,15 +164,12 @@ export default {
       console.info("test active!");
       console.info(this.$route.path.split("/")[1]);
     },
-    getSessionInfo: function() {
-      // 预处理，获取session信息，登录相关
-      if (sessionStorage.getItem("is_login")) {
-        this.user.is_login = sessionStorage.getItem("is_login");
-        this.user.u_email = sessionStorage.getItem("u_email");
-        this.user.u_id = sessionStorage.getItem("u_id");
-        this.user.u_name = sessionStorage.getItem("u_name");
-        this.user.u_register_time = sessionStorage.getItem("u_register_time");
-      }
+    showDrawer: function(){
+      this.drawer = !this.drawer
+    },
+    goPage: function(url){
+      this.$router.push({path:url})
+      this.reload();
     },
     getArticleInfo: function() {
       axios

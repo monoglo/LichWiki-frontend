@@ -2,14 +2,19 @@
   <v-app>
     <v-content>
       <router-view v-if="isRouterAlive"></router-view>
+      <footerDiv></footerDiv>
     </v-content>
   </v-app>
 </template>
 
 <script>
+import footerDiv from './components/Footer'
 
 export default {
   name: 'App',
+  components:{
+    footerDiv
+  },
   provide(){
     return {
       reload:this.reload

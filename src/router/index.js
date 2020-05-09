@@ -24,22 +24,22 @@ const routes = [
     component: () => import('../views/About.vue')
   },
   {
-    path: '/page/:category_name/:article_name',
+    path: '/article/:category_name/:article_name',
     name: 'ArticlePage',
     component: () => import('../views/ArticlePage.vue')
   },
   {
-    path: '/page/:category_name/:article_name/source',
+    path: '/article/:category_name/:article_name/source',
     name: 'ArticlePageSource',
     component: () => import('../views/ArticleSource.vue')
   },
   {
-    path: '/page/:category_name/:article_name/history',
+    path: '/article/:category_name/:article_name/history',
     name: 'ArticleHistoryList',
     component: () => import('../views/ArticleHistoryList.vue')
   },
   {
-    path: '/page/:category_name/:article_name/history/:article_history_id',
+    path: '/article/:category_name/:article_name/history/:article_history_id',
     name: 'ArticleHistoryPage',
     component: () => import('../views/ArticleHistoryPage.vue')
   }
