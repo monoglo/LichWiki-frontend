@@ -21,10 +21,10 @@
                   :key="item.ah_id"
                 >
                   <span slot="opposite">{{ item.ah_edit_time }}</span>
-                  <v-card class="elevation-2">
+                  <v-card class="elevation-20" link>
                     <v-card-title class="headline">{{ item.ah_summary }}</v-card-title>
                     <v-card-subtitle class="pb-1">{{ item.author_name }}</v-card-subtitle>
-                    <v-card-text>{{ item.ah_length }} 字节({{ item.length_change }})</v-card-text>
+                    <v-card-text>{{ item.ah_length }} 字符 ({{ item.length_change }})</v-card-text>
                   </v-card>
                 </v-timeline-item>
               </v-timeline>
@@ -106,18 +106,18 @@ export default {
         .then(res => {
           this.article_history = res.data;
           var instant_length = 0;
-          for (var i = (this.article_history.length - 1); i >= 0; i--) {
+          for (var i = 0; i <= (this.article_history.length - 1); i++) {
             if (parseInt(this.article_history[i]["ah_length"]) >= instant_length) {
               this.article_history[i]["length_change"] =
                 "+" +
                 String(this.article_history[i]["ah_length"] - instant_length) +
-                "字节";
+                "字符";
               instant_length = parseInt(this.article_history[i]["ah_length"]);
             } else {
               this.article_history[i]["length_change"] =
                 "-" +
                 String(instant_length - parseInt(this.article_history[i]["ah_length"])) +
-                "字节";
+                "字符";
               instant_length = parseInt(this.article_history[i]["ah_length"]);
             }
 
