@@ -123,8 +123,13 @@ export default {
         )
         .then(res => {
           console.log(res.data);
-          this.article.title = res.data["a_title"];
-          this.article.text = res.data["a_text"];
+          this.article.a_id = res.data["a_id"]
+          this.article.subject_id = res.data["subject_id"]
+          this.article.subject_name = res.data["subject_name"]
+          this.article.author_id = res.data["author_id"]
+          this.article.author_name = res.data["author_name"]
+          this.article.title = res.data["a_title"]
+          this.article.text = res.data["a_text"]
         });
     },
     getInfoFromURL: function() {
