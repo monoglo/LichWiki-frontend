@@ -24,14 +24,24 @@ const routes = [
     component: () => import('../views/About.vue')
   },
   {
+    path: '/create/article',
+    name: 'CreateArticlePage',
+    component: () => import('../views/CreateArticlePage.vue')
+  },
+  {
     path: '/article/:category_name/:article_name',
     name: 'ArticlePage',
     component: () => import('../views/ArticlePage.vue')
   },
   {
     path: '/article/:category_name/:article_name/source',
-    name: 'ArticlePageSource',
+    name: 'ArticleSourcePage',
     component: () => import('../views/ArticleSource.vue')
+  },
+  {
+    path: '/article/:category_name/:article_name/edit',
+    name: 'ArticleEditPage',
+    component: () => import('../views/ArticleEdit.vue')
   },
   {
     path: '/article/:category_name/:article_name/history',

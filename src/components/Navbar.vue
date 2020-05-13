@@ -34,7 +34,7 @@
             <v-list-item-title>词条修改历史</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link @click="goPage('/newarticle')">
+        <v-list-item link @click="goPage('/create/article')">
           <v-list-item-action>
             <v-icon>mdi-book-plus-multiple-outline</v-icon>
           </v-list-item-action>

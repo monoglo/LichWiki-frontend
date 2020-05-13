@@ -21,7 +21,7 @@
                   :key="item.ah_id"
                 >
                   <span slot="opposite">{{ item.ah_edit_time }}</span>
-                  <v-card class="elevation-20" link>
+                  <v-card class="elevation-20" link @click="goHistoryPage(item.ah_id)">
                     <v-card-title class="headline">{{ item.ah_summary }}</v-card-title>
                     <v-card-subtitle class="pb-1">{{ item.author_name }}</v-card-subtitle>
                     <v-card-text>{{ item.ah_length }} 字符 ({{ item.length_change }})</v-card-text>
@@ -69,7 +69,10 @@ export default {
       var M = date.split('-')['1']
       var D = date.split('-')['2']
       return Y+ "年" + M + "月" + D + "日" + " " +time
-      
+    },
+    goHistoryPage: function(ah_id) {
+      console.info(this.$route.path)
+      this.$router.push({path:this.$route.path + '/' + ah_id})
     },
     getInfoFromURL: function() {
       this.article.category = this.$route.path.split("/")[2];

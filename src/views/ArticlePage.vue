@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <div>
     <navbar></navbar>
       <!-- 左侧边栏（词条侧边栏）-->
       <!-- 右侧边栏（用户侧边栏）-->
@@ -56,7 +56,7 @@
         </v-row>
       </v-container>
     </v-content>
-  </v-app>
+  </div>
 </template>
 
 <script>
