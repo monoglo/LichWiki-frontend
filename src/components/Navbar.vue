@@ -10,7 +10,7 @@
       </v-list-item>
       <v-divider></v-divider>
       <v-list dense>
-        <v-list-item link @click="goChildPage('/source')">
+        <v-list-item link @click="goChildPage('/source')" v-if="is_article_page">
           <v-list-item-action>
             <v-icon>mdi-code-json</v-icon>
           </v-list-item-action>
@@ -18,7 +18,7 @@
             <v-list-item-title>查看源代码</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link @click="goChildPage('/edit')">
+        <v-list-item link @click="goChildPage('/edit')" v-if="is_article_page">
           <v-list-item-action>
             <v-icon>mdi-file-document-edit-outline</v-icon>
           </v-list-item-action>
@@ -26,7 +26,7 @@
             <v-list-item-title>编辑词条</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link @click="goChildPage('/history')">
+        <v-list-item link @click="goChildPage('/history')" v-if="is_article_page">
           <v-list-item-action>
             <v-icon>mdi-history</v-icon>
           </v-list-item-action>
@@ -65,7 +65,12 @@
       </template>
       <v-divider></v-divider>
       <v-list dense>
-        <v-list-item v-for="item in items" :key="item.title" link>
+        <v-list-item
+          v-for="item in items"
+          :key="item.title"
+          link
+          @click="goPage('/user/' + user.u_name)"
+        >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-icon>
@@ -241,6 +246,7 @@ export default {
       top: false,
       vertical: false
     },
+    is_article_page: false,
     // 词条信息
     article: {},
     // 注册信息
@@ -283,16 +289,34 @@ export default {
     getInfoFromURL: function() {
       this.article.category = this.$route.path.split("/")[2];
       this.article.title = this.$route.path.split("/")[3];
+      if (this.$route.path.split("/")[1] == "article") {
+        this.is_article_page = true;
+      }
     },
-    goChildPage: function(url){
+    goChildPage: function(url) {
       // 跳转到子页面
       // console.info(this.$route.params['article_name'])
-      this.$router.push({path:'/article/'+ this.$route.params['category_name'] + '/' + this.$route.params['article_name'] + url}).catch(err => {console.info(err)})
+      if (this.$route.params["category_name"]) {
+        this.$router
+          .push({
+            path:
+              "/article/" +
+              this.$route.params["category_name"] +
+              "/" +
+              this.$route.params["article_name"] +
+              url
+          })
+          .catch(err => {
+            console.info(err);
+          });
+      } else {
+        this.reload();
+      }
       this.reload();
     },
-    goPage: function(url){
+    goPage: function(url) {
       // 跳转到指定页面
-      this.$router.push({path:url})
+      this.$router.push({ path: url });
       this.reload();
     },
     userRegister: function() {
@@ -419,7 +443,7 @@ export default {
             }, 3000);
           }
         });
-    },
+    }
   }
 };
 </script>
