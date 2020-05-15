@@ -41,12 +41,12 @@ const routes = [
   {
     path: '/article/:category_name/:article_name/source',
     name: 'ArticleSourcePage',
-    component: () => import('../views/ArticleSource.vue')
+    component: () => import('../views/ArticleSourcePage.vue')
   },
   {
     path: '/article/:category_name/:article_name/edit',
     name: 'ArticleEditPage',
-    component: () => import('../views/ArticleEdit.vue')
+    component: () => import('../views/ArticleEditPage.vue')
   },
   {
     path: '/article/:category_name/:article_name/history',
