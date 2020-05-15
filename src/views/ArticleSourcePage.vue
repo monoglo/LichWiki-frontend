@@ -20,7 +20,7 @@
                   <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
                   <div v-html="article.banner"></div>
                   <v-card-text class="text--primary">
-                    <span v-html="article.text"></span>
+                    {{ article.text }}
                   </v-card-text>
                 </v-card>
               </v-tab-item>

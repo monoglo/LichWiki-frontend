@@ -221,6 +221,19 @@
         @click="snackbarInfo.snackbar = !snackbarInfo.snackbar"
       >{{ snackbarInfo.buttonText }}</v-btn>
     </v-snackbar>
+    <v-btn
+      v-scroll="onScroll"
+      v-show="fab"
+      fab
+      dark
+      fixed
+      bottom
+      right
+      color="primary"
+      @click="toTop"
+    >
+      <v-icon>mdi-keyboard-caps</v-icon>
+    </v-btn>
   </div>
 </template>
 
@@ -235,6 +248,7 @@ export default {
     userdrawer: false,
     loginForm: false,
     registerForm: false,
+    fab: false,
     snackbarInfo: {
       snackbar: false,
       bottom: false,
@@ -443,6 +457,14 @@ export default {
             }, 3000);
           }
         });
+    },
+    onScroll(e) {
+      if (typeof window === "undefined") return;
+      const top = window.pageYOffset || e.target.scrollTop || 0;
+      this.fab = top > 20;
+    },
+    toTop() {
+      this.$vuetify.goTo(0);
     }
   }
 };
