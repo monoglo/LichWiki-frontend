@@ -20,7 +20,7 @@
                   <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
                   <div v-html="article.banner"></div>
                   <v-card-text class="text--primary">
-                    <span v-html="article.text"></span>
+                    <vue-showdown :markdown="article.text" vueTemplate emoji></vue-showdown>
                   </v-card-text>
                 </v-card>
               </v-tab-item>
@@ -62,11 +62,13 @@
 <script>
 import axios from "axios";
 import navbar from '../components/Navbar'
+import {VueShowdown} from 'vue-showdown'
 
 export default {
   inject: ["reload"],
   components: {
-    navbar
+    navbar,
+    'vue-showdown': VueShowdown,
   },
   data: () => ({
     snackbarInfo: {
@@ -83,7 +85,7 @@ export default {
     // 词条信息
     article: {
       title: null,
-      text: null,
+      text: "载入中",
       category: null,
       create_time: null,
       banner:

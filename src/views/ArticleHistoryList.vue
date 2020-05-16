@@ -9,7 +9,7 @@
           <v-tab-item>
             <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
               <v-card-title class="display-2">{{ article.title }} 的历史修改记录</v-card-title>
-              <v-card-subtitle class="pb-0">5 名用户进行了 25 次更改。</v-card-subtitle>
+              <v-card-subtitle class="pb-0">5 名用户进行了 {{ article_history.length }} 次更改。</v-card-subtitle>
               <v-divider></v-divider>
               <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
               <v-timeline v-model="article_history">
