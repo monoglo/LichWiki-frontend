@@ -28,15 +28,6 @@
                 codeStyle="dark"
                 :editable="Boolean(this.user.is_login)"
               ></markdown-editor>
-              <!-- <v-form ref="form" v-model="valid" lazy-validation>
-                <v-text-field
-                  label="编辑摘要"
-                  v-model="article.summary"
-                  counter="255"
-                  :rules="[rules.required]"
-                ></v-text-field>
-                <v-btn color="primary" @click="validate">提交更改</v-btn>
-              </v-form>-->
               <br />
               <br />
             </v-card>
