@@ -52,7 +52,7 @@
       <v-btn
         dark
         text
-        @click="snackbarInfo.snackbar = !snackbarInfo.snackbar"
+        @click="goArticlePage"
       >{{ snackbarInfo.buttonText }}</v-btn>
     </v-snackbar>
   </div>
@@ -72,7 +72,7 @@ export default {
     valid: true,
     article: {
       name: null,
-      text: null,
+      text: String(null),
       summary: null
     },
     user: {
@@ -112,6 +112,17 @@ export default {
         this.user.u_id = sessionStorage.getItem("u_id");
         this.user.u_name = sessionStorage.getItem("u_name");
         this.user.u_register_time = sessionStorage.getItem("u_register_time");
+      }
+    },
+    goArticlePage: function() {
+      if (this.snackbarInfo.color == "success") {
+        this.$router.push({
+          path:
+            "/article/" + this.article.subject_name + "/" + this.article.title
+        });
+        this.reload();
+      } else {
+        this.snackbarInfo.snackbar = false;
       }
     },
     getArticleInfo: function() {

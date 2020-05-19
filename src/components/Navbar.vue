@@ -64,7 +64,7 @@
         </v-list-item>
       </template>
       <v-divider></v-divider>
-      <v-list dense>
+      <v-list dense v-if="user.is_login">
         <v-list-item
           v-for="item in items"
           :key="item.title"
@@ -99,16 +99,18 @@
       <v-toolbar-title>LichWiki 大学维基</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-text-field
+        v-model="search_bar"
         class="d-none d-sm-flex"
         flat
         hide-details
-        label="在该学科分类下查找"
+        :label="search_label"
         prepend-inner-icon="mdi-layers-search"
         solo-inverted
         dense
         clearable
         filled
         rounded
+        @keydown.enter="goSearchPage()"
       ></v-text-field>
       <v-badge
         :value="Boolean(user.is_login)"
@@ -244,6 +246,8 @@ export default {
   name: "navbar",
   inject: ["reload"],
   data: () => ({
+    search_bar: null,
+    search_label: "在当前学科分类下查找",
     drawer: false,
     userdrawer: false,
     loginForm: false,
@@ -303,9 +307,19 @@ export default {
     getInfoFromURL: function() {
       this.article.category = this.$route.path.split("/")[2];
       this.article.title = this.$route.path.split("/")[3];
+      this.search_label = "在" + this.article.category + "学科分类下查找";
       if (this.$route.path.split("/")[1] == "article") {
         this.is_article_page = true;
       }
+    },
+    goSearchPage: function() {
+      this.$router.push({
+        path:
+          "/article/" +
+          this.$route.params["category_name"] +
+          "/" +
+          this.search_bar
+      });
     },
     goChildPage: function(url) {
       // 跳转到子页面

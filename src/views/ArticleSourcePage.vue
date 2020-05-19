@@ -10,8 +10,7 @@
         <v-row>
           <v-col cols="12" sm="9" md="9" lg="9" xl="9">
             <v-tabs v-model="tab" background-color="gray" class="elevation-2" dark>
-              <v-tab>页面</v-tab>
-              <v-tab>讨论</v-tab>
+              <v-tab>源代码</v-tab>
               <v-tab-item>
                 <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
                   <v-card-title class="display-2">{{ article.title }} 的源代码页面</v-card-title>
@@ -24,7 +23,6 @@
                   </v-card-text>
                 </v-card>
               </v-tab-item>
-              <v-tab-item></v-tab-item>
             </v-tabs>
           </v-col>
           <v-col>
@@ -38,15 +36,15 @@
                   <tbody>
                     <tr>
                       <td>中文名</td>
-                      <td>极限</td>
+                      <td>{{ article.title }}</td>
                     </tr>
                     <tr>
                       <td>英文名</td>
-                      <td>Limit</td>
+                      <td>{{ title_en }}</td>
                     </tr>
                     <tr>
                       <td>应用领域</td>
-                      <td>微积分</td>
+                      <td>{{ article.category }}</td>
                     </tr>
                   </tbody>
                 </v-simple-table>
@@ -69,6 +67,7 @@ export default {
     navbar
   },
   data: () => ({
+    title_en: null,
     snackbarInfo: {
       snackbar: false,
       bottom: false,
@@ -130,6 +129,14 @@ export default {
           this.article.author_name = res.data["author_name"]
           this.article.title = res.data["a_title"]
           this.article.text = res.data["a_text"]
+          axios
+            .get(
+              "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20200519T074038Z.503a14eb57703888.a49840c93b70b285aee9ef4a95416eaa0246f0d6&lang=en&text=" +
+                this.article.title
+            )
+            .then(res => {
+              this.title_en = res.data.text[0]
+            });
         });
     },
     getInfoFromURL: function() {

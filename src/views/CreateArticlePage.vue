@@ -6,7 +6,6 @@
       <v-container fluid>
         <v-tabs background-color="gray" class="elevation-2" dark>
           <v-tab>页面</v-tab>
-          <v-tab>讨论</v-tab>
           <v-tab-item>
             <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
               <v-card-title class="display-2">新建条目</v-card-title>
@@ -15,7 +14,7 @@
                 <v-select
                   v-model="article.subject_name"
                   :items="subjects"
-                  :rules="[v => !!v || 'Item is required']"
+                  :rules="[v => !!v || '学科分类不能为空！']"
                   label="学科分类"
                   required
                 ></v-select>
@@ -39,7 +38,6 @@
               <br />
             </v-card>
           </v-tab-item>
-          <v-tab-item></v-tab-item>
         </v-tabs>
       </v-container>
     </v-content>
@@ -77,7 +75,7 @@ export default {
     subjects_info: {},
     article: {
       name: null,
-      text: "",
+      text: String(null),
       subject_name: null
     },
     user: {
