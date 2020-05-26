@@ -57,6 +57,11 @@ const routes = [
     path: '/article/:category_name/:article_name/history/:article_history_id',
     name: 'ArticleHistoryPage',
     component: () => import('../views/ArticleHistoryPage.vue')
+  },
+  {
+    path: '/create/model',
+    name: 'CreateModelPage',
+    component: () => import('../views/CreateModelPage.vue')
   }
 ]
 

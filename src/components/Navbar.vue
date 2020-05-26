@@ -42,6 +42,14 @@
             <v-list-item-title>新建词条</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link @click="goPage('/create/model')">
+          <v-list-item-action>
+            <v-icon>mdi-table-plus</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>新建模板</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <!-- 右侧边栏（用户侧边栏）-->

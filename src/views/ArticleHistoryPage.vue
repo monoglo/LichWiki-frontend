@@ -13,7 +13,7 @@
                   <v-card-title class="display-2">"{{ article_history.title }}" 的历史页面查看 - "{{ article_history.summary }}"</v-card-title>
                   <v-card-subtitle class="pb-0">{{ article_history.author_name }} 于{{ article_history.edit_time }} 进行了本次修改</v-card-subtitle>
                   <v-divider></v-divider>
-                  <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner>
+                  <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
 
                   <v-card-text class="text--primary">
                     <vue-showdown :markdown="article_history.text" vueTemplate emoji></vue-showdown>
