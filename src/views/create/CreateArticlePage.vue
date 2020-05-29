@@ -61,7 +61,7 @@
 
 <script>
 import axios from "axios";
-import navbar from "../components/Navbar";
+import navbar from "../../components/Navbar";
 import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 export default {

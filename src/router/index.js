@@ -24,44 +24,49 @@ const routes = [
     component: () => import('../views/About.vue')
   },
   {
+    path: '/message',
+    name: 'MessageCenterPage',
+    component: () => import('../views/user/MessageCenterPage.vue')
+  },
+  {
     path: '/create/article',
     name: 'CreateArticlePage',
-    component: () => import('../views/CreateArticlePage.vue')
+    component: () => import('../views/create/CreateArticlePage.vue')
   },
   {
     path: '/user/:user_name',
     name: 'UserPage',
-    component: () => import('../views/UserPage.vue')
+    component: () => import('../views/user/UserPage.vue')
   },
   {
     path: '/article/:category_name/:article_name',
     name: 'ArticlePage',
-    component: () => import('../views/ArticlePage.vue')
+    component: () => import('../views/article/ArticlePage.vue')
   },
   {
     path: '/article/:category_name/:article_name/source',
     name: 'ArticleSourcePage',
-    component: () => import('../views/ArticleSourcePage.vue')
+    component: () => import('../views/article/ArticleSourcePage.vue')
   },
   {
     path: '/article/:category_name/:article_name/edit',
     name: 'ArticleEditPage',
-    component: () => import('../views/ArticleEditPage.vue')
+    component: () => import('../views/article/ArticleEditPage.vue')
   },
   {
     path: '/article/:category_name/:article_name/history',
     name: 'ArticleHistoryList',
-    component: () => import('../views/ArticleHistoryList.vue')
+    component: () => import('../views/article/ArticleHistoryList.vue')
   },
   {
     path: '/article/:category_name/:article_name/history/:article_history_id',
     name: 'ArticleHistoryPage',
-    component: () => import('../views/ArticleHistoryPage.vue')
+    component: () => import('../views/article/ArticleHistoryPage.vue')
   },
   {
     path: '/create/model',
     name: 'CreateModelPage',
-    component: () => import('../views/CreateModelPage.vue')
+    component: () => import('../views/create/CreateModelPage.vue')
   }
 ]
 

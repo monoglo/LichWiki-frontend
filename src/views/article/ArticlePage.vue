@@ -106,7 +106,7 @@
 
 <script>
 import axios from "axios";
-import navbar from "../components/Navbar";
+import navbar from "../../components/Navbar";
 import { VueShowdown } from "vue-showdown";
 
 export default {

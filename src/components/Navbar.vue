@@ -73,17 +73,30 @@
       </template>
       <v-divider></v-divider>
       <v-list dense v-if="user.is_login">
-        <v-list-item
-          v-for="item in items"
-          :key="item.title"
-          link
-          @click="goPage('/user/' + user.u_name)"
-        >
+        <v-list-item link @click="goPage('/user/' + user.u_name)">
           <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>mdi-home-city</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title>个人中心</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link @click="goPage('/message')">
+          <v-list-item-icon>
+            <v-badge
+              :value="Boolean(unread_notification_amount)"
+              :content="unread_notification_amount"
+              color="blue"
+              overlap
+              small
+              v-if="Boolean(unread_notification_amount)"
+            >
+              <v-icon>mdi-message-processing</v-icon>
+            </v-badge>
+            <v-icon v-else>mdi-message-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>消息中心</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -121,15 +134,16 @@
         @keydown.enter="goSearchPage()"
       ></v-text-field>
       <v-badge
-        :value="Boolean(user.is_login)"
-        bottom
-        color="primary"
-        dot
-        offset-x="10"
-        offset-y="10"
+        :value="Boolean(unread_notification_amount)"
+        :content="unread_notification_amount"
+        offset-x="20"
+        offset-y="20"
+        color="pink"
+        overlap
       >
         <v-btn icon @click.stop="userdrawer = !userdrawer">
-          <v-icon>mdi-account-circle</v-icon>
+          <v-icon v-if="user.is_login">mdi-account-check</v-icon>
+          <v-icon v-else>mdi-account-cancel</v-icon>
         </v-btn>
       </v-badge>
     </v-app-bar>
@@ -281,6 +295,8 @@ export default {
     loginInfo: {},
     // 用户信息
     user: {},
+    // 未读信息数
+    unread_notification_amount: 0,
     items: [
       { title: "Home", icon: "mdi-home-city" },
       { title: "My Account", icon: "mdi-account" },
@@ -310,14 +326,32 @@ export default {
         this.user.u_id = sessionStorage.getItem("u_id");
         this.user.u_name = sessionStorage.getItem("u_name");
         this.user.u_register_time = sessionStorage.getItem("u_register_time");
+        axios
+          .get(
+            "http://127.0.0.1:8000/api/notifications/user/" +
+              this.user.u_name +
+              "/amount"
+          )
+          .then(response => {
+            this.unread_notification_amount = response.data;
+          });
       }
     },
     getInfoFromURL: function() {
-      this.article.category = this.$route.path.split("/")[2];
-      this.article.title = this.$route.path.split("/")[3];
-      this.search_label = "在" + this.article.category + "学科分类下查找";
-      if (this.$route.path.split("/")[1] == "article") {
-        this.is_article_page = true;
+      var url_split = this.$route.path.split("/");
+      if (url_split.length > 2) {
+        if (url_split[1] == "article") {
+          this.article.category = this.$route.path.split("/")[2];
+          this.article.title = this.$route.path.split("/")[3];
+          this.search_label = "在" + this.article.category + "学科分类下查找";
+          this.is_article_page = true;
+        } else if(url_split[1] == "user") {
+          this.article.title = "用户:" + this.$route.path.split("/")[2];
+        }else if(url_split[1] == "create") {
+          this.article.title = "创建:" + this.$route.path.split("/")[2];
+        }
+      } else if(url_split[1] == "message") {
+          this.article.title = "消息中心";
       }
     },
     goSearchPage: function() {

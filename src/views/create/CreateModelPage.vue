@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import navbar from "../components/Navbar";
+import navbar from "../../components/Navbar";
 import axios from "axios";
 import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";

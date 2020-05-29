@@ -60,7 +60,7 @@
 
 <script>
 import axios from "axios";
-import navbar from "../components/Navbar";
+import navbar from "../../components/Navbar";
 import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 export default {
@@ -175,6 +175,14 @@ export default {
               this.snackbarInfo.snackbar = true;
             }
           });
+      }else{
+        this.snackbarInfo.text = "未登录用户当前默认无法编辑！";
+        this.snackbarInfo.buttonText = "确定";
+        this.snackbarInfo.color = "error";
+        this.snackbarInfo.top = true;
+        this.snackbarInfo.vertical = true;
+        //this.snackbarInfo.refresh = true;
+        this.snackbarInfo.snackbar = true;
       }
     }
   }

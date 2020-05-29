@@ -59,7 +59,7 @@
 
 <script>
 import axios from "axios";
-import navbar from '../components/Navbar'
+import navbar from "../../components/Navbar";
 
 export default {
   inject: ["reload"],
