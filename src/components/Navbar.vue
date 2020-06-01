@@ -239,11 +239,7 @@
       :vertical="snackbarInfo.vertical"
     >
       {{ snackbarInfo.text }}
-      <v-btn
-        dark
-        text
-        @click="snackbarInfo.snackbar = !snackbarInfo.snackbar"
-      >{{ snackbarInfo.buttonText }}</v-btn>
+      <v-btn dark text @click="skipRefresh()">{{ snackbarInfo.buttonText }}</v-btn>
     </v-snackbar>
     <v-btn
       v-scroll="onScroll"
@@ -286,6 +282,7 @@ export default {
       top: false,
       vertical: false
     },
+    timeout: null,
     is_article_page: false,
     // 词条信息
     article: {},
@@ -318,6 +315,17 @@ export default {
     showDrawer: function() {
       this.$emit("showDrawer");
     },
+    getUnreadNotificationsAmount: function() {
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/notifications/user/" +
+            this.user.u_name +
+            "/amount"
+        )
+        .then(response => {
+          this.unread_notification_amount = response.data;
+        });
+    },
     getSessionInfo: function() {
       // 预处理，获取session信息，登录相关
       if (sessionStorage.getItem("is_login")) {
@@ -326,15 +334,7 @@ export default {
         this.user.u_id = sessionStorage.getItem("u_id");
         this.user.u_name = sessionStorage.getItem("u_name");
         this.user.u_register_time = sessionStorage.getItem("u_register_time");
-        axios
-          .get(
-            "http://127.0.0.1:8000/api/notifications/user/" +
-              this.user.u_name +
-              "/amount"
-          )
-          .then(response => {
-            this.unread_notification_amount = response.data;
-          });
+        this.getUnreadNotificationsAmount();
       }
     },
     getInfoFromURL: function() {
@@ -345,13 +345,13 @@ export default {
           this.article.title = this.$route.path.split("/")[3];
           this.search_label = "在" + this.article.category + "学科分类下查找";
           this.is_article_page = true;
-        } else if(url_split[1] == "user") {
+        } else if (url_split[1] == "user") {
           this.article.title = "用户:" + this.$route.path.split("/")[2];
-        }else if(url_split[1] == "create") {
+        } else if (url_split[1] == "create") {
           this.article.title = "创建:" + this.$route.path.split("/")[2];
         }
-      } else if(url_split[1] == "message") {
-          this.article.title = "消息中心";
+      } else if (url_split[1] == "message") {
+        this.article.title = "消息中心";
       }
     },
     goSearchPage: function() {
@@ -389,6 +389,14 @@ export default {
       this.$router.push({ path: url });
       this.reload();
     },
+    skipRefresh: function() {
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.reload();
+      } else {
+        this.snackbarInfo.snackbar = false;
+      }
+    },
     userRegister: function() {
       let postData = {
         u_email: this.registerInfo.u_email,
@@ -400,7 +408,7 @@ export default {
         .then(response => {
           if (response.data) {
             this.snackbarInfo.text = "注册成功！3秒后刷新页面...";
-            this.snackbarInfo.buttonText = "确定";
+            this.snackbarInfo.buttonText = "立即刷新";
             this.snackbarInfo.color = "primary";
             this.snackbarInfo.top = true;
             this.snackbarInfo.vertical = true;
@@ -412,7 +420,7 @@ export default {
             setTimeout(() => {
               this.snackbarInfo.text = "注册成功！1秒后刷新页面...";
             }, 1000);
-            setTimeout(() => {
+            this.timeout = setTimeout(() => {
               this.reload();
             }, 3000);
           } else {
@@ -447,7 +455,7 @@ export default {
             this.user.is_login = true;
 
             this.snackbarInfo.text = "登录成功！3秒后刷新页面...";
-            this.snackbarInfo.buttonText = "确定";
+            this.snackbarInfo.buttonText = "立即刷新";
             this.snackbarInfo.color = "success";
             this.snackbarInfo.top = true;
             this.snackbarInfo.vertical = true;
@@ -465,7 +473,7 @@ export default {
               this.snackbarInfo.snackbar = false;
               this.snackbarInfo.snackbar = true;
             }, 2000);
-            setTimeout(() => {
+            this.timeout = setTimeout(() => {
               this.reload();
             }, 3000);
           } else {
@@ -486,7 +494,7 @@ export default {
         .then(response => {
           if (response.data["code"] == 1000) {
             this.snackbarInfo.text = "已退出！3秒后刷新页面...";
-            this.snackbarInfo.buttonText = "确定";
+            this.snackbarInfo.buttonText = "立即刷新";
             this.snackbarInfo.color = "error";
             //this.snackbarInfo.top = true;
             this.snackbarInfo.vertical = true;
@@ -508,7 +516,7 @@ export default {
               this.snackbarInfo.snackbar = false;
               this.snackbarInfo.snackbar = true;
             }, 2000);
-            setTimeout(() => {
+            this.timeout = setTimeout(() => {
               this.reload();
             }, 3000);
           }
