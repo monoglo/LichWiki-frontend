@@ -8,28 +8,37 @@
 </template>
 
 <script>
-import footerDiv from './components/Footer'
+import footerDiv from "./components/Footer";
 
 export default {
-  name: 'App',
-  components:{
+  name: "App",
+  components: {
     footerDiv
   },
-  provide(){
+  provide() {
     return {
-      reload:this.reload
-    }
+      reload: this.reload
+    };
   },
-  
+
   data: () => ({
     isRouterAlive: true
   }),
 
   methods: {
     reload() {
-      this.isRouterAlive = false
-      this.$nextTick(() => (this.isRouterAlive = true))
+      this.isRouterAlive = false;
+      this.$nextTick(() => (this.isRouterAlive = true));
     }
   }
 };
 </script>
+
+<style type="text/css">
+a {
+  color: #3949ab !important;
+}
+a:hover {
+  color: black !important;
+}
+</style>

@@ -8,6 +8,16 @@
 // @ is an alias to /src
 
 export default {
-  name: "Home"
+  name: "Home",
+  created(){
+    this.goDirect()
+  },
+  methods: {
+    goDirect: function() {
+      this.$router.push({
+        path: "/article/高等数学/极限"
+      });
+    }
+  }
 };
 </script>
