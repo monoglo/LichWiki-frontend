@@ -1,11 +1,20 @@
 <template>
   <div>
-    <navbar v-if="child" ref="navbar"></navbar>
+    <navbar ref="navbar"></navbar>
     <v-container fluid>
       <v-tabs background-color="gray" class="elevation-2" dark>
-        <v-tab>全部</v-tab>
-        <v-tab>未读</v-tab>
-        <v-tab>已读</v-tab>
+        <v-tab>全部消息</v-tab>
+        <v-tab>
+          <v-badge
+            :value="Boolean(unread_notification_amount)"
+            :content="unread_notification_amount"
+            :key="change"
+            color="blue"
+            overlap
+            small
+          >未读消息</v-badge>
+        </v-tab>
+        <v-tab>已读消息</v-tab>
         <v-tab-item>
           <div :key="loaddata">
             <div v-for="(item,key) in all_notifications" :key="key">
@@ -17,7 +26,10 @@
                   >
                     <span :class="{strong:!item.n_has_read}" :key="change">{{item.n_title}}</span>
                   </v-expansion-panel-header>
-                  <v-expansion-panel-content>{{item.n_text}}</v-expansion-panel-content>
+                  <v-expansion-panel-content>
+                    <v-subheader>来自 {{item.n_sender_user_name}} - {{ item.n_create_time }}</v-subheader>
+                    {{item.n_text}}
+                  </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
             </div>
@@ -34,7 +46,10 @@
                   >
                     <span :class="{strong:!item.n_has_read}" :key="change">{{item.n_title}}</span>
                   </v-expansion-panel-header>
-                  <v-expansion-panel-content>{{item.n_text}}</v-expansion-panel-content>
+                  <v-expansion-panel-content>
+                    <v-subheader>来自 {{item.n_sender_user_name}} - {{ item.n_create_time }}</v-subheader>
+                    {{item.n_text}}
+                  </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
             </div>
@@ -52,7 +67,10 @@
                   >
                     <span :class="{strong:!item.n_has_read}" :key="change">{{item.n_title}}</span>
                   </v-expansion-panel-header>
-                  <v-expansion-panel-content>{{item.n_text}}</v-expansion-panel-content>
+                  <v-expansion-panel-content>
+                    <v-subheader>来自 {{item.n_sender_user_name}} - {{ item.n_create_time }}</v-subheader>
+                    {{item.n_text}}
+                  </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
             </div>
@@ -71,9 +89,9 @@ export default {
     navbar
   },
   data: () => ({
-    child: true,
     loaddata: false,
     change: false,
+    unread_notification_amount: 0,
     user: {},
     all_notifications: {},
     unread_notifications: {},
@@ -81,6 +99,7 @@ export default {
   }),
   created() {
     this.getSessionInfo();
+    this.updateUnreadNotificationsAmount()
   },
   methods: {
     timeParse: function(my_date_time) {
@@ -94,7 +113,6 @@ export default {
     },
     getSessionInfo: function() {
       // 预处理，获取session信息，登录相关
-      console.info(this.$children);
       if (sessionStorage.getItem("is_login")) {
         this.user.is_login = sessionStorage.getItem("is_login");
         this.user.u_email = sessionStorage.getItem("u_email");
@@ -104,12 +122,6 @@ export default {
         this.getNotifications();
       }
     },
-    reRenderNavbar: function() {
-      this.child = false;
-      this.$nextTick(() => {
-        this.child = true;
-      });
-    },
     updateUnreadNotificationsAmount: function() {
       axios
         .get(
@@ -118,8 +130,8 @@ export default {
             "/amount"
         )
         .then(response => {
+          this.unread_notification_amount = response.data
           this.$refs.navbar.unread_notification_amount = response.data;
-          this.reRenderNavbar()
         });
     },
     readNotification: function(n_id) {
@@ -127,9 +139,9 @@ export default {
         .get("http://127.0.0.1:8000/api/notifications/id/" + n_id)
         .then(response => {
           console.info(response);
+          this.updateUnreadNotificationsAmount();
+          this.change = !this.change;
         });
-      this.updateUnreadNotificationsAmount();
-      this.change = !this.change;
     },
     getNotifications: function() {
       axios
