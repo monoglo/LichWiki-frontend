@@ -11,7 +11,7 @@
               <v-tab-item>
                 <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
                   <v-card-title class="display-2">"{{ article_history.title }}" 的历史页面查看 - "{{ article_history.summary }}"</v-card-title>
-                  <v-card-subtitle class="pb-0">{{ article_history.author_name }} 于{{ article_history.edit_time }} 进行了本次修改</v-card-subtitle>
+                  <v-card-subtitle class="pb-0"><a @click="goUserPage(article_history.author_name)">{{ article_history.author_name }}</a> 于 {{ article_history.edit_time }} ({{article_history.edit_time_count}}) 进行了本次修改</v-card-subtitle>
                   <v-divider></v-divider>
                   <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
 
@@ -90,6 +90,13 @@ export default {
       var D = date.split('-')['2']
       return Y+ "年" + M + "月" + D + "日" + " " +time
     },
+    goUserPage: function(user_name) {
+      this.$router.push({
+        path:
+          "/user/" +
+          user_name
+      });
+    },
     getArticleHistorySingalInfo: function() {
       axios
         .get(
@@ -108,13 +115,75 @@ export default {
             this.article_history.text = response.data["ah_text"];
             this.article_history.length = response.data["ah_length"];
             this.article_history.edit_time = this.timeParse(response.data["ah_edit_time"]);
+            var date = new Date(response.data["ah_edit_time"])
+            this.article_history.edit_time_count = this.formatMsgTime(date.getTime());
             this.article_history.article_id = response.data["article_id"];
             this.article_history.author_id = response.data["author_id"];
             this.article_history.author_name = response.data["author_name"];
             console.info(this.article_history)
           }
         });
-    }
+    },
+    formatMsgTime: function(timespan) {
+      var dateTime = new Date(timespan);
+
+      var year = dateTime.getFullYear();
+      var month = dateTime.getMonth() + 1;
+      var day = dateTime.getDate();
+      var hour = dateTime.getHours();
+      var minute = dateTime.getMinutes();
+      //var second = dateTime.getSeconds();
+      var now = new Date();
+      var now_new = Math.round(new Date()); //typescript转换写法
+      var milliseconds = 0;
+      var timeSpanStr;
+
+      milliseconds = now_new - timespan;
+
+      if (milliseconds <= 1000 * 60 * 1) {
+        timeSpanStr = "刚刚";
+      } else if (
+        1000 * 60 * 1 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60)) + "分钟前";
+      } else if (
+        1000 * 60 * 60 * 1 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60 * 24
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60 * 60)) + "小时前";
+      } else if (
+        1000 * 60 * 60 * 24 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60 * 24 * 15
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60 * 60 * 24)) + "天前";
+      } else if (
+        milliseconds > 1000 * 60 * 60 * 24 * 15 &&
+        year == now.getFullYear()
+      ) {
+        timeSpanStr = month + "-" + day + " " + hour + ":" + minute;
+      } else {
+        timeSpanStr =
+          year + "-" + month + "-" + day + " " + hour + ":" + minute;
+      }
+      return timeSpanStr;
+    },
+    getArticleLatestUpdateInfo: function() {
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/articles/" +
+            this.$route.params.category_name +
+            "/" +
+            this.$route.params.article_name +
+            "/latest"
+        )
+        .then(res => {
+          console.log(res.data);
+          this.article.latest_edit_user_name = res.data["author_name"];
+          this.article.latest_edit_user_id = res.data["author_id"];
+          
+        });
+    },
   }
 };
 </script>

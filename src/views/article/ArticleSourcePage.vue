@@ -1,9 +1,9 @@
 <template>
   <div>
     <navbar></navbar>
-      <!-- 左侧边栏（词条侧边栏）-->
-      <!-- 右侧边栏（用户侧边栏）-->
-      <!-- 顶部导航栏-->
+    <!-- 左侧边栏（词条侧边栏）-->
+    <!-- 右侧边栏（用户侧边栏）-->
+    <!-- 顶部导航栏-->
     <!-- 主体内容区块-->
     <v-content style="padding: 0px 0px 0px;">
       <v-container fluid>
@@ -14,13 +14,13 @@
               <v-tab-item>
                 <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
                   <v-card-title class="display-2">{{ article.title }} 的源代码页面</v-card-title>
-                  <v-card-subtitle class="pb-0">Paradox 于3天前 修改了 此页面</v-card-subtitle>
+                  <v-card-subtitle
+                    class="pb-0"
+                  ><a @click="goUserPage(article.latest_edit_user_name)">{{article.latest_edit_user_name}}</a> 于{{article.latest_edit_time}} <a @click="goArticleHistoryPage()">修改了</a> 此页面</v-card-subtitle>
                   <v-divider></v-divider>
                   <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
                   <div v-html="article.banner"></div>
-                  <v-card-text class="text--primary">
-                    {{ article.text }}
-                  </v-card-text>
+                  <v-card-text class="text--primary">{{ article.text }}</v-card-text>
                 </v-card>
               </v-tab-item>
             </v-tabs>
@@ -105,6 +105,7 @@ export default {
   }),
   created() {
     this.getArticleInfo();
+    this.getArticleLatestUpdateInfo();
     this.getInfoFromURL();
   },
   methods: {
@@ -122,20 +123,20 @@ export default {
         )
         .then(res => {
           console.log(res.data);
-          this.article.a_id = res.data["a_id"]
-          this.article.subject_id = res.data["subject_id"]
-          this.article.subject_name = res.data["subject_name"]
-          this.article.author_id = res.data["author_id"]
-          this.article.author_name = res.data["author_name"]
-          this.article.title = res.data["a_title"]
-          this.article.text = res.data["a_text"]
+          this.article.a_id = res.data["a_id"];
+          this.article.subject_id = res.data["subject_id"];
+          this.article.subject_name = res.data["subject_name"];
+          this.article.author_id = res.data["author_id"];
+          this.article.author_name = res.data["author_name"];
+          this.article.title = res.data["a_title"];
+          this.article.text = res.data["a_text"];
           axios
             .get(
               "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20200519T074038Z.503a14eb57703888.a49840c93b70b285aee9ef4a95416eaa0246f0d6&lang=en&text=" +
                 this.article.title
             )
             .then(res => {
-              this.title_en = res.data.text[0]
+              this.title_en = res.data.text[0];
             });
         });
     },
@@ -143,104 +144,84 @@ export default {
       this.article.category = this.$route.path.split("/")[2];
       this.article.title = this.$route.path.split("/")[3];
     },
-    userRegister: function() {
-      let postData = {
-        u_email: this.registerInfo.u_email,
-        u_name: this.registerInfo.u_name,
-        u_password: this.registerInfo.u_password
-      };
-      axios
-        .post("http://127.0.0.1:8000/api/users/", postData)
-        .then(response => {
-          if (response.data) {
-            this.snackbarInfo.text = "注册成功！即将刷新页面...";
-            this.snackbarInfo.buttonText = "立即刷新";
-            this.snackbarInfo.color = "primary";
-            this.snackbarInfo.top = true;
-            this.snackbarInfo.vertical = true;
-            this.snackbarInfo.refresh = true;
-            this.snackbarInfo.snackbar = true;
-
-            setTimeout(() => {
-              this.reload();
-            }, 3000);
-          } else {
-            this.snackbarInfo.text = "注册失败，请再次尝试！";
-            this.snackbarInfo.buttonText = "确定";
-            this.snackbarInfo.color = "error";
-            this.snackbarInfo.top = true;
-            this.snackbarInfo.vertical = true;
-            this.snackbarInfo.snackbar = true;
-          }
-        });
+    goUserPage: function(user_name) {
+      this.$router.push({
+        path:
+          "/user/" +
+          user_name
+      });
     },
-    userLogin: function() {
-      let postData = {
-        u_name: this.loginInfo.u_name,
-        u_password: this.loginInfo.u_password
-      };
-      axios
-        .post("http://127.0.0.1:8000/api/user_login", postData)
-        .then(response => {
-          console.log(response.data);
-          if (response.data["code"] == 1000) {
-            sessionStorage.setItem("is_login", true);
-            sessionStorage.setItem("u_email", response.data.data.u_email);
-            sessionStorage.setItem("u_id", response.data.data.u_id);
-            sessionStorage.setItem("u_name", response.data.data.u_name);
-            sessionStorage.setItem(
-              "u_register_time",
-              response.data.data.u_register_time
-            );
-            this.user = response.data["data"];
-            this.user.is_login = true;
-
-            this.snackbarInfo.text = "登录成功！即将刷新页面...";
-            this.snackbarInfo.buttonText = "立即刷新";
-            this.snackbarInfo.color = "success";
-            this.snackbarInfo.top = true;
-            this.snackbarInfo.vertical = true;
-            this.snackbarInfo.refresh = true;
-            this.snackbarInfo.snackbar = true;
-            //console.log(this.user)
-            //this.reload()
-            setTimeout(() => {
-              this.reload();
-            }, 3000);
-          } else {
-            this.snackbarInfo.text = "用户名或密码错误！";
-            this.snackbarInfo.buttonText = "确定";
-            this.snackbarInfo.color = "error";
-            this.snackbarInfo.top = true;
-            this.snackbarInfo.vertical = true;
-            this.snackbarInfo.snackbar = true;
-          }
-        });
+    goArticleHistoryPage: function() {
+      this.$router.push({
+        path:
+          "/article/" +
+          this.article.category +
+          "/" +
+          this.article.title +
+          "/history/" +
+          this.article.latest_edit_history_id
+      });
     },
-    userLogout: function() {
-      //post foo
-      let postData = {};
+    formatMsgTime: function(timespan) {
+      var dateTime = new Date(timespan);
+
+      var year = dateTime.getFullYear();
+      var month = dateTime.getMonth() + 1;
+      var day = dateTime.getDate();
+      var hour = dateTime.getHours();
+      var minute = dateTime.getMinutes();
+      //var second = dateTime.getSeconds();
+      var now = new Date();
+      var now_new = Math.round(new Date()); //typescript转换写法
+      var milliseconds = 0;
+      var timeSpanStr;
+
+      milliseconds = now_new - timespan;
+
+      if (milliseconds <= 1000 * 60 * 1) {
+        timeSpanStr = "刚刚";
+      } else if (
+        1000 * 60 * 1 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60)) + "分钟前";
+      } else if (
+        1000 * 60 * 60 * 1 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60 * 24
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60 * 60)) + "小时前";
+      } else if (
+        1000 * 60 * 60 * 24 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60 * 24 * 15
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60 * 60 * 24)) + "天前";
+      } else if (
+        milliseconds > 1000 * 60 * 60 * 24 * 15 &&
+        year == now.getFullYear()
+      ) {
+        timeSpanStr = month + "-" + day + " " + hour + ":" + minute;
+      } else {
+        timeSpanStr =
+          year + "-" + month + "-" + day + " " + hour + ":" + minute;
+      }
+      return timeSpanStr;
+    },
+    getArticleLatestUpdateInfo: function() {
       axios
-        .post("http://127.0.0.1:8000/api/user_logout", postData)
-        .then(response => {
-          if (response.data["code"] == 1000) {
-            this.snackbarInfo.text = "已退出！即将刷新页面...";
-            this.snackbarInfo.buttonText = "立即刷新";
-            this.snackbarInfo.color = "error";
-            //this.snackbarInfo.top = true;
-            this.snackbarInfo.vertical = true;
-            this.snackbarInfo.refresh = true;
-            this.snackbarInfo.snackbar = true;
-
-            this.userdrawer = false;
-            sessionStorage.clear();
-
-            //console.log(this.user)
-            //this.reload()
-            setTimeout(() => {
-              this.reload();
-            }, 3000);
-          }
+        .get(
+          "http://127.0.0.1:8000/api/articles/" +
+            this.$route.params.category_name +
+            "/" +
+            this.$route.params.article_name +
+            "/latest"
+        )
+        .then(res => {
+          console.log(res.data);
+          this.article.latest_edit_history_id = res.data["ah_id"];
+          this.article.latest_edit_user_name = res.data["author_name"];
+          this.article.latest_edit_user_id = res.data["author_id"];
+          var date = new Date(res.data["ah_edit_time"]);
+          this.article.latest_edit_time = this.formatMsgTime(date.getTime());
         });
     }
   }

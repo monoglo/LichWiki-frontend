@@ -149,8 +149,8 @@ export default {
         a_id: this.article.a_id,
         subject_id: this.article.subject_id,
         subject_name: this.article.subject_name,
-        author_id: this.article.author_id,
-        author_name: this.article.author_name,
+        author_id: this.user.u_id,
+        author_name: this.user.u_name,
         ah_summary: this.article.summary,
         a_title: this.article.title,
         a_text: this.article.text

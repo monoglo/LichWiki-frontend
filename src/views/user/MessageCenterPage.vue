@@ -17,10 +17,10 @@
         <v-tab>已读消息</v-tab>
         <v-tab-item>
           <div :key="loaddata">
-            <div v-for="(item,key) in all_notifications" :key="key">
+            <div v-for="(items,key) in all_notifications" :key="key">
               <v-subheader>{{ key }}</v-subheader>
               <v-expansion-panels multiple popout hover>
-                <v-expansion-panel v-for="(item,key) in item" :key="key">
+                <v-expansion-panel v-for="(item,key) in items" :key="key">
                   <v-expansion-panel-header
                     @click="readNotification(item.n_id);item.n_has_read = true"
                   >
@@ -28,7 +28,7 @@
                   </v-expansion-panel-header>
                   <v-expansion-panel-content>
                     <v-subheader>来自 {{item.n_sender_user_name}} - {{ item.n_create_time }}</v-subheader>
-                    {{item.n_text}}
+                    <vue-showdown :markdown="item.n_text" vueTemplate emoji></vue-showdown>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -37,10 +37,10 @@
         </v-tab-item>
         <v-tab-item>
           <div :key="loaddata">
-            <div v-for="(item,key) in unread_notifications" :key="key">
+            <div v-for="(items,key) in unread_notifications" :key="key">
               <v-subheader>{{ key }}</v-subheader>
               <v-expansion-panels multiple popout hover>
-                <v-expansion-panel v-for="(item,key) in item" :key="key">
+                <v-expansion-panel v-for="(item,key) in items" :key="key">
                   <v-expansion-panel-header
                     @click="readNotification(item.n_id);item.n_has_read = true"
                   >
@@ -48,7 +48,7 @@
                   </v-expansion-panel-header>
                   <v-expansion-panel-content>
                     <v-subheader>来自 {{item.n_sender_user_name}} - {{ item.n_create_time }}</v-subheader>
-                    {{item.n_text}}
+                    <vue-showdown :markdown="item.n_text" vueTemplate emoji></vue-showdown>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -58,10 +58,10 @@
 
         <v-tab-item>
           <div :key="loaddata">
-            <div v-for="(item,key) in has_read_notifications" :key="key">
+            <div v-for="(items,key) in has_read_notifications" :key="key">
               <v-subheader>{{ key }}</v-subheader>
               <v-expansion-panels multiple popout hover>
-                <v-expansion-panel v-for="(item,key) in item" :key="key">
+                <v-expansion-panel v-for="(item,key) in items" :key="key">
                   <v-expansion-panel-header
                     @click="readNotification(item.n_id);item.n_has_read = true"
                   >
@@ -69,7 +69,7 @@
                   </v-expansion-panel-header>
                   <v-expansion-panel-content>
                     <v-subheader>来自 {{item.n_sender_user_name}} - {{ item.n_create_time }}</v-subheader>
-                    {{item.n_text}}
+                    <vue-showdown :markdown="item.n_text" vueTemplate emoji></vue-showdown>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -84,9 +84,11 @@
 <script>
 import navbar from "../../components/Navbar";
 import axios from "axios";
+import { VueShowdown } from "vue-showdown";
 export default {
   components: {
-    navbar
+    navbar,
+    "vue-showdown": VueShowdown
   },
   data: () => ({
     loaddata: false,

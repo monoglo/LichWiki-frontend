@@ -15,7 +15,13 @@
               <v-tab-item>
                 <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
                   <v-card-title class="display-2">{{ article.title }}</v-card-title>
-                  <v-card-subtitle class="pb-0">Paradox 于3天前 修改了 此页面</v-card-subtitle>
+                  <v-card-subtitle class="pb-0">
+                    <a
+                      @click="goUserPage(article.latest_edit_user_name)"
+                    >{{article.latest_edit_user_name}}</a>
+                    于{{article.latest_edit_time}}
+                    <a @click="goArticleHistoryPage()">修改了</a> 此页面
+                  </v-card-subtitle>
                   <v-divider></v-divider>
                   <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
                   <!-- <div v-html="article.banner"></div> -->
@@ -161,6 +167,7 @@ export default {
   }),
   created() {
     this.getArticleInfo();
+    this.getArticleLatestUpdateInfo();
     this.getInfoFromURL();
     this.getCommentByURL();
   },
@@ -177,6 +184,22 @@ export default {
       var M = date.split("-")["1"];
       var D = date.split("-")["2"];
       return Y + "年" + M + "月" + D + "日" + " " + time;
+    },
+    goUserPage: function(user_name) {
+      this.$router.push({
+        path: "/user/" + user_name
+      });
+    },
+    goArticleHistoryPage: function() {
+      this.$router.push({
+        path:
+          "/article/" +
+          this.article.category +
+          "/" +
+          this.article.title +
+          "/history/" +
+          this.article.latest_edit_history_id
+      });
     },
     getArticleInfo: function() {
       axios
@@ -203,6 +226,68 @@ export default {
             .then(res => {
               this.title_en = res.data.text[0];
             });
+        });
+    },
+    formatMsgTime: function(timespan) {
+      var dateTime = new Date(timespan);
+
+      var year = dateTime.getFullYear();
+      var month = dateTime.getMonth() + 1;
+      var day = dateTime.getDate();
+      var hour = dateTime.getHours();
+      var minute = dateTime.getMinutes();
+      //var second = dateTime.getSeconds();
+      var now = new Date();
+      var now_new = Math.round(new Date()); //typescript转换写法
+      var milliseconds = 0;
+      var timeSpanStr;
+
+      milliseconds = now_new - timespan;
+
+      if (milliseconds <= 1000 * 60 * 1) {
+        timeSpanStr = "刚刚";
+      } else if (
+        1000 * 60 * 1 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60)) + "分钟前";
+      } else if (
+        1000 * 60 * 60 * 1 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60 * 24
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60 * 60)) + "小时前";
+      } else if (
+        1000 * 60 * 60 * 24 < milliseconds &&
+        milliseconds <= 1000 * 60 * 60 * 24 * 15
+      ) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60 * 60 * 24)) + "天前";
+      } else if (
+        milliseconds > 1000 * 60 * 60 * 24 * 15 &&
+        year == now.getFullYear()
+      ) {
+        timeSpanStr = month + "-" + day + " " + hour + ":" + minute;
+      } else {
+        timeSpanStr =
+          year + "-" + month + "-" + day + " " + hour + ":" + minute;
+      }
+      return timeSpanStr;
+    },
+    getArticleLatestUpdateInfo: function() {
+      axios
+        .get(
+          "http://127.0.0.1:8000/api/articles/" +
+            this.$route.params.category_name +
+            "/" +
+            this.$route.params.article_name +
+            "/latest"
+        )
+        .then(res => {
+          console.log(res.data);
+          this.article.latest_edit_history_id = res.data["ah_id"];
+          this.article.latest_edit_user_name = res.data["author_name"];
+          this.article.latest_edit_user_id = res.data["author_id"];
+          var date = new Date(res.data["ah_edit_time"]);
+          this.article.latest_edit_time = this.formatMsgTime(date.getTime());
         });
     },
     // 评论相关
