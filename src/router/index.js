@@ -64,6 +64,11 @@ const routes = [
     component: () => import('../views/article/ArticleHistoryPage.vue')
   },
   {
+    path: '/article/:category_name/:article_name/history/:article_history_id/source',
+    name: 'ArticleHistorySourcePage',
+    component: () => import('../views/article/ArticleHistorySourcePage.vue')
+  },
+  {
     path: '/create/model',
     name: 'CreateModelPage',
     component: () => import('../views/create/CreateModelPage.vue')

@@ -103,7 +103,7 @@ export default {
   methods: {
     validate: function() {
       if (this.$refs.form.validate()) {
-        console.info("imalive");
+        //console.info("imalive");
         this.postArticleCreate();
       }
     },
@@ -118,11 +118,11 @@ export default {
       }
     },
     getAllSubjects: function() {
-      axios.get("http://127.0.0.1:8000/api/subjects/").then(response => {
+      axios.get(this.GLOBAL.base_url + "/api/subjects/").then(response => {
         if (response.data.results) {
           var items = new Array();
           this.subjects_info = response.data.results;
-          console.info(this.subjects_info);
+          //console.info(this.subjects_info);
           for (var i = 0; i < response.data.results.length; i++) {
             items.push(response.data.results[i]["s_name"]);
           }
@@ -142,7 +142,7 @@ export default {
       }
     },
     postArticleCreate: function() {
-      console.info(this.article.subject_name);
+      //info(this.article.subject_name);
       var subject_id = -1;
       for (var i = 0; i < this.subjects_info.length; i++) {
         if (this.subjects_info[i]["s_name"] == this.article.subject_name) {
@@ -160,11 +160,11 @@ export default {
       if (this.user.is_login) {
         axios
           .post(
-            "http://127.0.0.1:8000/api/articles/" + this.article.subject_name,
+            this.GLOBAL.base_url + "/api/articles/" + this.article.subject_name,
             postData
           )
           .then(res => {
-            console.info(res);
+            //console.info(res);
             if (res.data["a_id"]) {
               this.snackbarInfo.text = "创建成功！";
               this.snackbarInfo.buttonText = "跳转到创建的词条页面";

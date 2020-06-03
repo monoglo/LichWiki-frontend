@@ -6,7 +6,6 @@
       <v-container fluid>
         <v-tabs background-color="gray" class="elevation-2" dark>
           <v-tab>页面</v-tab>
-          <v-tab>讨论</v-tab>
           <v-tab-item>
             <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
               <v-card-title class="display-2">编辑 "{{ article.title }}"</v-card-title>
@@ -32,7 +31,6 @@
               <br />
             </v-card>
           </v-tab-item>
-          <v-tab-item></v-tab-item>
         </v-tabs>
       </v-container>
     </v-content>
@@ -100,7 +98,7 @@ export default {
   methods: {
     validate: function() {
       if (this.$refs.form.validate()) {
-        console.info("imalive");
+        //console.info("imalive");
         this.postArticleEdit();
       }
     },
@@ -128,13 +126,13 @@ export default {
     getArticleInfo: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/articles/" +
+          this.GLOBAL.base_url + "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name
         )
         .then(res => {
-          console.log(res.data);
+          //console.log(res.data);
           this.article.a_id = res.data["a_id"];
           this.article.subject_id = res.data["subject_id"];
           this.article.subject_name = res.data["subject_name"];
@@ -158,7 +156,7 @@ export default {
       if (this.user.is_login) {
         axios
           .put(
-            "http://127.0.0.1:8000/api/articles/" +
+            this.GLOBAL.base_url + "/api/articles/" +
               this.$route.params.category_name +
               "/" +
               this.$route.params.article_name,

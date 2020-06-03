@@ -127,7 +127,7 @@ export default {
     updateUnreadNotificationsAmount: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/notifications/user/" +
+          this.GLOBAL.base_url + "/api/notifications/user/" +
             this.user.u_name +
             "/amount"
         )
@@ -138,7 +138,7 @@ export default {
     },
     readNotification: function(n_id) {
       axios
-        .get("http://127.0.0.1:8000/api/notifications/id/" + n_id)
+        .get(this.GLOBAL.base_url + "/api/notifications/id/" + n_id)
         .then(response => {
           console.info(response);
           this.updateUnreadNotificationsAmount();
@@ -147,7 +147,7 @@ export default {
     },
     getNotifications: function() {
       axios
-        .get("http://127.0.0.1:8000/api/notifications/user/" + this.user.u_name)
+        .get(this.GLOBAL.base_url + "/api/notifications/user/" + this.user.u_name)
         .then(response => {
           /*
           {
@@ -176,7 +176,7 @@ export default {
           if (response.data) {
             var notifications = response.data;
             notifications.reverse();
-            console.info(notifications);
+            //info(notifications);
             // 转化时间格式
             for (var item in notifications) {
               notifications[item].n_create_time = this.timeParse(
@@ -235,9 +235,9 @@ export default {
                 }
               }
             }
-            console.info(this.all_notifications);
-            console.info(this.has_read_notifications);
-            console.info(this.unread_notifications);
+            //console.info(this.all_notifications);
+            //console.info(this.has_read_notifications);
+            //console.info(this.unread_notifications);
             this.loaddata = true;
           }
         });

@@ -10,13 +10,13 @@
               <v-tab>讨论</v-tab>
               <v-tab-item>
                 <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
-                  <v-card-title class="display-2">"{{ article_history.title }}" 的历史页面查看 - "{{ article_history.summary }}"</v-card-title>
+                  <v-card-title class="display-2">"{{ article_history.title }}" 的历史页面查看(源代码) - "{{ article_history.summary }}"</v-card-title>
                   <v-card-subtitle class="pb-0"><a @click="goUserPage(article_history.author_name)">{{ article_history.author_name }}</a> 于 {{ article_history.edit_time }} ({{article_history.edit_time_count}}) 进行了本次修改</v-card-subtitle>
                   <v-divider></v-divider>
                   <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
 
                   <v-card-text class="text--primary">
-                    <vue-showdown :markdown="article_history.text" vueTemplate emoji></vue-showdown>
+                    {{article_history.text}}
                   </v-card-text>
                 </v-card>
               </v-tab-item>
@@ -58,13 +58,11 @@
 <script>
 import axios from "axios";
 import navbar from "../../components/Navbar";
-import {VueShowdown} from 'vue-showdown'
 
 export default {
   inject: ["reload"],
   components: {
-    navbar,
-    VueShowdown
+    navbar
   },
   data: () => ({
     article_history: {

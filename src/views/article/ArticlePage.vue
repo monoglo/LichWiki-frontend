@@ -173,8 +173,8 @@ export default {
   },
   methods: {
     test: function() {
-      console.info("test active!");
-      console.info(this.$route.path.split("/")[1]);
+      //console.info("test active!");
+      //console.info(this.$route.path.split("/")[1]);
     },
     timeParse: function(my_date_time) {
       var date_time_split = my_date_time.split("T");
@@ -204,13 +204,13 @@ export default {
     getArticleInfo: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/articles/" +
+          this.GLOBAL.base_url + "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name
         )
         .then(res => {
-          console.log(res.data);
+          //console.log(res.data);
           this.article.a_id = res.data["a_id"];
           this.article.subject_id = res.data["subject_id"];
           this.article.subject_name = res.data["subject_name"];
@@ -275,14 +275,14 @@ export default {
     getArticleLatestUpdateInfo: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/articles/" +
+          this.GLOBAL.base_url + "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name +
             "/latest"
         )
         .then(res => {
-          console.log(res.data);
+          //console.log(res.data);
           this.article.latest_edit_history_id = res.data["ah_id"];
           this.article.latest_edit_user_name = res.data["author_name"];
           this.article.latest_edit_user_id = res.data["author_id"];
@@ -300,9 +300,9 @@ export default {
       };
       // console.info(postData);
       axios
-        .post("http://127.0.0.1:8000/api/comments/", postData)
+        .post(this.GLOBAL.base_url + "/api/comments/", postData)
         .then(response => {
-          console.info(response);
+          //console.info(response);
           if (response.data) {
             this.snackbarInfo.text = "评论发送成功！";
             this.snackbarInfo.buttonText = "确定";
@@ -330,7 +330,7 @@ export default {
       this.url = url;
       // console.info(url);
       axios
-        .get("http://127.0.0.1:8000/api/comments/?c_url=" + url)
+        .get(this.GLOBAL.base_url + "/api/comments/?c_url=" + url)
         .then(response => {
           var comments = response.data;
           this.comments = comments.reverse();

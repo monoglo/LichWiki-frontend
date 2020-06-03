@@ -3,10 +3,11 @@ import './plugins/axios'
 import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
-
 import axios from './plugins/axios'
-Vue.prototype.$http = axios
+import global from './components/Global.vue'
 
+Vue.prototype.$http = axios
+Vue.prototype.GLOBAL = global
 Vue.config.productionTip = false
 
 new Vue({

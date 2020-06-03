@@ -165,7 +165,7 @@ export default {
       };
       // console.info(postData);
       axios
-        .post("http://127.0.0.1:8000/api/comments/", postData)
+        .post(this.GLOBAL.base_url + "/api/comments/", postData)
         .then(response => {
           console.info(response);
           if (response.data) {
@@ -195,7 +195,7 @@ export default {
       this.url = url;
       // console.info(url);
       axios
-        .get("http://127.0.0.1:8000/api/comments/?c_url=" + url)
+        .get(this.GLOBAL.base_url + "/api/comments/?c_url=" + url)
         .then(response => {
           var comments = response.data;
           this.comments = comments.reverse();
@@ -207,7 +207,7 @@ export default {
     },
     getUserInfo: function() {
       axios
-        .get("http://127.0.0.1:8000/api/users/" + this.user.u_name)
+        .get(this.GLOBAL.base_url + "/api/users/" + this.user.u_name)
         .then(response => {
           if (response.data) {
             this.user.u_id = response.data["u_id"];
@@ -218,7 +218,7 @@ export default {
             );
             axios
               .get(
-                "http://127.0.0.1:8000/api/article_history/user/" +
+                this.GLOBAL.base_url + "/api/article_history/user/" +
                   this.user.u_id
               )
               .then(response => {

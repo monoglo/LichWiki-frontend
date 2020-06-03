@@ -309,8 +309,8 @@ export default {
   },
   methods: {
     test: function() {
-      console.info("test active!");
-      console.info(this.$route.path.split("/")[1]);
+      //console.info("test active!");
+      //console.info(this.$route.path.split("/")[1]);
     },
     showDrawer: function() {
       this.$emit("showDrawer");
@@ -318,7 +318,7 @@ export default {
     getUnreadNotificationsAmount: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/notifications/user/" +
+          this.GLOBAL.base_url + "/api/notifications/user/" +
             this.user.u_name +
             "/amount"
         )
@@ -367,18 +367,31 @@ export default {
       // 跳转到子页面
       // console.info(this.$route.params['article_name'])
       if (this.$route.params["category_name"]) {
-        this.$router
-          .push({
+        if (this.$route.params["article_history_id"] && url=="/source") {
+          this.$router.push({
             path:
               "/article/" +
               this.$route.params["category_name"] +
               "/" +
               this.$route.params["article_name"] +
+              "/history/" +
+              this.$route.params["article_history_id"] +
               url
-          })
-          .catch(err => {
-            console.info(err);
           });
+        } else {
+          this.$router
+            .push({
+              path:
+                "/article/" +
+                this.$route.params["category_name"] +
+                "/" +
+                this.$route.params["article_name"] +
+                url
+            })
+            .catch(err => {
+              console.info(err);
+            });
+        }
       } else {
         this.reload();
       }
@@ -404,7 +417,7 @@ export default {
         u_password: this.registerInfo.u_password
       };
       axios
-        .post("http://127.0.0.1:8000/api/users/", postData)
+        .post(this.GLOBAL.base_url + "/api/users/", postData)
         .then(response => {
           if (response.data) {
             this.snackbarInfo.text = "注册成功！3秒后刷新页面...";
@@ -439,9 +452,8 @@ export default {
         u_password: this.loginInfo.u_password
       };
       axios
-        .post("http://127.0.0.1:8000/api/user_login", postData)
+        .post(this.GLOBAL.base_url + "/api/user_login", postData)
         .then(response => {
-          console.log(response.data);
           if (response.data["code"] == 1000) {
             sessionStorage.setItem("is_login", true);
             sessionStorage.setItem("u_email", response.data.data.u_email);
@@ -490,7 +502,7 @@ export default {
       //post foo
       let postData = {};
       axios
-        .post("http://127.0.0.1:8000/api/user_logout", postData)
+        .post(this.GLOBAL.base_url + "/api/user_logout", postData)
         .then(response => {
           if (response.data["code"] == 1000) {
             this.snackbarInfo.text = "已退出！3秒后刷新页面...";

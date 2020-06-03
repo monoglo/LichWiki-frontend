@@ -18,8 +18,6 @@
                     class="pb-0"
                   ><a @click="goUserPage(article.latest_edit_user_name)">{{article.latest_edit_user_name}}</a> 于{{article.latest_edit_time}} <a @click="goArticleHistoryPage()">修改了</a> 此页面</v-card-subtitle>
                   <v-divider></v-divider>
-                  <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
-                  <div v-html="article.banner"></div>
                   <v-card-text class="text--primary">{{ article.text }}</v-card-text>
                 </v-card>
               </v-tab-item>
@@ -85,8 +83,6 @@ export default {
       text: null,
       category: null,
       create_time: null,
-      banner:
-        '<div class="v-banner v-sheet v-sheet--tile theme--light v-banner--has-icon v-banner--is-mobile v-banner--single-line"><div class="v-banner__wrapper"><div class="v-banner__content"><div class="v-avatar v-banner__icon" style="height: 40px; min-width: 40px; width: 40px;"><div class="v-avatar blue lighten-1" style="height: 40px; min-width: 40px; width: 40px;"><i aria-hidden="true" icon="mdi-tag-faces" class="v-icon notranslate mdi mdi-tag-faces theme--light white--text"></i></div></div><div class="v-banner__text">这篇文章需要改进。你可以帮助维基来编辑它。</div></div></div></div>'
     },
     // 注册信息
     registerInfo: {},
@@ -110,19 +106,19 @@ export default {
   },
   methods: {
     test: function() {
-      console.info("test active!");
-      console.info(this.$route.path.split("/")[1]);
+      //console.info("test active!");
+      //console.info(this.$route.path.split("/")[1]);
     },
     getArticleInfo: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/articles/" +
+          this.GLOBAL.base_url + "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name
         )
         .then(res => {
-          console.log(res.data);
+          //console.log(res.data);
           this.article.a_id = res.data["a_id"];
           this.article.subject_id = res.data["subject_id"];
           this.article.subject_name = res.data["subject_name"];
@@ -209,14 +205,14 @@ export default {
     getArticleLatestUpdateInfo: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/articles/" +
+          this.GLOBAL.base_url + "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name +
             "/latest"
         )
         .then(res => {
-          console.log(res.data);
+          //console.log(res.data);
           this.article.latest_edit_history_id = res.data["ah_id"];
           this.article.latest_edit_user_name = res.data["author_name"];
           this.article.latest_edit_user_id = res.data["author_id"];

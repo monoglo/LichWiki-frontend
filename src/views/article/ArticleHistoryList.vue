@@ -9,7 +9,7 @@
           <v-tab-item>
             <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
               <v-card-title class="display-2">{{ article.title }} 的历史修改记录</v-card-title>
-              <v-card-subtitle class="pb-0">5 名用户进行了 {{ article_history.length }} 次更改。</v-card-subtitle>
+              <v-card-subtitle class="pb-0">{{ article_history.editer_amount }} 名用户进行了 {{ article_history.length }} 次更改。</v-card-subtitle>
               <v-divider></v-divider>
               <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
               <v-timeline v-model="article_history">
@@ -136,7 +136,7 @@ export default {
       return Y + "年" + M + "月" + D + "日" + " " + time;
     },
     goHistoryPage: function(ah_id) {
-      console.info(this.$route.path);
+      //console.info(this.$route.path);
       this.$router.push({ path: this.$route.path + "/" + ah_id });
     },
     getInfoFromURL: function() {
@@ -146,13 +146,13 @@ export default {
     getArticleInfo: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/articles/" +
+          this.GLOBAL.base_url + "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name
         )
         .then(res => {
-          console.log(res.data);
+          //console.log(res.data);
           this.article.a_id = res.data["a_id"];
           this.article.subject_id = res.data["subject_id"];
           this.article.subject_name = res.data["subject_name"];
@@ -165,7 +165,7 @@ export default {
     getArticleHistoryInfo: function() {
       axios
         .get(
-          "http://127.0.0.1:8000/api/articles/" +
+          this.GLOBAL.base_url + "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name +
@@ -174,7 +174,11 @@ export default {
         .then(res => {
           this.article_history = res.data;
           var instant_length = 0;
+          var editors = new Array()
           for (var i = 0; i <= this.article_history.length - 1; i++) {
+            if (!(this.article_history[i]["author_id"] in editors)){
+              editors.push(this.article_history[i]["author_id"])
+            }
             if (
               parseInt(this.article_history[i]["ah_length"]) >= instant_length
             ) {
@@ -199,7 +203,8 @@ export default {
             );
           }
           this.article_history.reverse();
-          console.log(this.article_history);
+          this.article_history.editer_amount = editors.length
+          //console.log(this.article_history);
         });
     },
     // 评论相关
@@ -212,9 +217,9 @@ export default {
       };
       // console.info(postData);
       axios
-        .post("http://127.0.0.1:8000/api/comments/", postData)
+        .post(this.GLOBAL.base_url + "/api/comments/", postData)
         .then(response => {
-          console.info(response);
+          //console.info(response);
           if (response.data) {
             this.snackbarInfo.text = "评论发送成功！";
             this.snackbarInfo.buttonText = "确定";
@@ -242,7 +247,7 @@ export default {
       this.url = url;
       // console.info(url);
       axios
-        .get("http://127.0.0.1:8000/api/comments/?c_url=" + url)
+        .get(this.GLOBAL.base_url + "/api/comments/?c_url=" + url)
         .then(response => {
           var comments = response.data;
           this.comments = comments.reverse();
