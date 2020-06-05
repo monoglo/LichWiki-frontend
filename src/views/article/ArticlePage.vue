@@ -9,7 +9,7 @@
       <v-container fluid>
         <v-row>
           <v-col cols="12" sm="9" md="9" lg="9" xl="9">
-            <v-tabs v-model="tab" background-color="gray" class="elevation-2" dark>
+            <v-tabs background-color="gray" class="elevation-2" dark>
               <v-tab>页面</v-tab>
               <v-tab>讨论</v-tab>
               <v-tab-item>
@@ -20,7 +20,9 @@
                       @click="goUserPage(article.latest_edit_user_name)"
                     >{{article.latest_edit_user_name}}</a>
                     于{{article.latest_edit_time}}
-                    <a @click="goArticleHistoryPage()">修改了</a> 此页面
+                    <a
+                      @click="goArticleHistoryPage()"
+                    >修改了</a> 此页面
                   </v-card-subtitle>
                   <v-divider></v-divider>
                   <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
@@ -143,20 +145,12 @@ export default {
       banner:
         '<div class="v-banner v-sheet v-sheet--tile theme--light v-banner--has-icon v-banner--is-mobile v-banner--single-line"><div class="v-banner__wrapper"><div class="v-banner__content"><div class="v-avatar v-banner__icon" style="height: 40px; min-width: 40px; width: 40px;"><div class="v-avatar blue lighten-1" style="height: 40px; min-width: 40px; width: 40px;"><i aria-hidden="true" icon="mdi-tag-faces" class="v-icon notranslate mdi mdi-tag-faces theme--light white--text"></i></div></div><div class="v-banner__text">这篇文章需要改进。你可以帮助维基来编辑它。</div></div></div></div>'
     },
-    // 注册信息
-    registerInfo: {},
-    // 登陆信息
-    loginInfo: {},
+    // 词条使用中的模板
+    used_models: new Array(), // 已使用的模板
+    model_regex: new Array(),
+    model_text: new Array(),
     // 用户信息
     user: {},
-    items: [
-      { title: "Home", icon: "mdi-home-city" },
-      { title: "My Account", icon: "mdi-account" },
-      { title: "Users", icon: "mdi-account-group-outline" }
-    ],
-    tab: null,
-    text:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     // 评论相关
     is_login: sessionStorage.getItem("is_login"),
     url: null,
@@ -204,7 +198,8 @@ export default {
     getArticleInfo: function() {
       axios
         .get(
-          this.GLOBAL.base_url + "/api/articles/" +
+          this.GLOBAL.base_url +
+            "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name
@@ -226,6 +221,7 @@ export default {
             .then(res => {
               this.title_en = res.data.text[0];
             });
+          this.renderModel();
         });
     },
     formatMsgTime: function(timespan) {
@@ -275,7 +271,8 @@ export default {
     getArticleLatestUpdateInfo: function() {
       axios
         .get(
-          this.GLOBAL.base_url + "/api/articles/" +
+          this.GLOBAL.base_url +
+            "/api/articles/" +
             this.$route.params.category_name +
             "/" +
             this.$route.params.article_name +
@@ -340,6 +337,66 @@ export default {
     getInfoFromURL: function() {
       this.article.category = this.$route.path.split("/")[2];
       this.article.title = this.$route.path.split("/")[3];
+    },
+    renderModel: function() {
+      let in_str = this.article.text;
+      let reg_expression = /\{(\w.*)\|([^}|]*)*\}/g;
+      let results = [...in_str.matchAll(reg_expression)];
+      for (var item in results) {
+        if (!this.used_models.includes(results[item][1])) {
+          this.used_models.push(results[item][1]);
+        }
+      }
+
+      let promises = [];
+      for (var model in this.used_models) {
+        this.model_regex.push(
+          "\\{(" + this.used_models[model] + ")\\|([^}|]*)*\\}"
+        );
+        promises.push(
+          axios.get(
+            this.GLOBAL.base_url +
+              "/api/models/" +
+              this.$route.params["category_name"] +
+              "/" +
+              this.used_models[model]
+          )
+        );
+      }
+      Promise.all(promises).then(
+        responses => {
+          responses.forEach(response => {
+            if (response.data) {
+              this.model_text[
+                this.used_models.indexOf(response.data["m_name"])
+              ] = response.data["m_text"];
+            } else {
+              this.model_text[
+                this.used_models.indexOf(response.data["m_name"])
+              ] = "模板渲染错误";
+            }
+          });
+          for (var i in this.model_regex) {
+            in_str = in_str.replace(
+              new RegExp(this.model_regex[i], "g"),
+              this.model_text[i]
+            );
+            console.info(in_str);
+          }
+          this.article.text = in_str;
+        },
+        error => {
+          console.info(error);
+          for (var i in this.model_regex) {
+            in_str = in_str.replace(
+              new RegExp(this.model_regex[i], "g"),
+              this.model_text[i]
+            );
+            console.info(in_str);
+          }
+          this.article.text = in_str;
+        }
+      );
     }
   }
 };
