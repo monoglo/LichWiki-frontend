@@ -348,55 +348,33 @@ export default {
         }
       }
 
-      let promises = [];
       for (var model in this.used_models) {
         this.model_regex.push(
           "\\{(" + this.used_models[model] + ")\\|([^}|]*)*\\}"
         );
-        promises.push(
-          axios.get(
+        axios
+          .get(
             this.GLOBAL.base_url +
               "/api/models/" +
               this.$route.params["category_name"] +
               "/" +
               this.used_models[model]
           )
-        );
-      }
-      Promise.all(promises).then(
-        responses => {
-          responses.forEach(response => {
+          .then(response => {
             if (response.data) {
-              this.model_text[
-                this.used_models.indexOf(response.data["m_name"])
-              ] = response.data["m_text"];
-            } else {
-              this.model_text[
-                this.used_models.indexOf(response.data["m_name"])
-              ] = "模板渲染错误";
+              in_str = in_str.replace(
+                new RegExp(
+                  this.model_regex[
+                    this.used_models.indexOf(response.data["m_name"])
+                  ],
+                  "g"
+                ),
+                response.data["m_text"]
+              );
+              this.article.text = in_str;
             }
           });
-          for (var i in this.model_regex) {
-            in_str = in_str.replace(
-              new RegExp(this.model_regex[i], "g"),
-              this.model_text[i]
-            );
-            console.info(in_str);
-          }
-          this.article.text = in_str;
-        },
-        error => {
-          console.info(error);
-          for (var i in this.model_regex) {
-            in_str = in_str.replace(
-              new RegExp(this.model_regex[i], "g"),
-              this.model_text[i]
-            );
-            console.info(in_str);
-          }
-          this.article.text = in_str;
-        }
-      );
+      }
     }
   }
 };

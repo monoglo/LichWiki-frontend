@@ -117,7 +117,7 @@
     <!-- 顶部导航栏-->
     <v-app-bar app dark hide-on-scroll>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>LichWiki 大学维基</v-toolbar-title>
+      <v-toolbar-title link @click="goPage('/')">LichWiki 大学维基</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search_bar"
@@ -349,6 +349,8 @@ export default {
           this.article.title = "用户:" + this.$route.path.split("/")[2];
         } else if (url_split[1] == "create") {
           this.article.title = "创建:" + this.$route.path.split("/")[2];
+        } else if (url_split[1] == "model") {
+          this.article.title = "模板:" + this.$route.path.split("/")[2];
         }
       } else if (url_split[1] == "message") {
         this.article.title = "消息中心";
