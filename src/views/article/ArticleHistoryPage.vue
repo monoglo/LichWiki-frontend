@@ -20,7 +20,7 @@
                   </v-card-text>
                 </v-card>
               </v-tab-item>
-              <v-tab-item></v-tab-item>
+              <v-tab-item><comment-area></comment-area></v-tab-item>
             </v-tabs>
           </v-col>
           <v-col>
@@ -58,13 +58,15 @@
 <script>
 import axios from "axios";
 import navbar from "../../components/Navbar";
+import comment_area from "../../components/CommentArea"
 import {VueShowdown} from 'vue-showdown'
 
 export default {
   inject: ["reload"],
   components: {
     navbar,
-    VueShowdown
+    VueShowdown,
+    "comment-area": comment_area
   },
   data: () => ({
     article_history: {

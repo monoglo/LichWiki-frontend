@@ -33,35 +33,7 @@
                 </v-card>
               </v-tab-item>
               <v-tab-item>
-                <v-sheet elevation="12" class="pa-12">
-                  <v-form ref="form" lazy-validation>
-                    <v-textarea
-                      v-model="comment"
-                      clearable
-                      :label="comment_label"
-                      required
-                      :disabled="!Boolean(is_login)"
-                    ></v-textarea>
-                    <v-btn color="primary" @click="postComment" :disabled="!comment">发送</v-btn>
-                  </v-form>
-                </v-sheet>
-                <v-card v-for="comment in comments" :key="comment.c_id" style="padding:10px">
-                  <v-card-title>{{comment.c_user_name}}</v-card-title>
-                  <v-card-subtitle>{{timeParse(comment.c_create_time)}}</v-card-subtitle>
-                  <v-card-text>
-                    <span
-                      v-if="comment.c_father_comment_user_name"
-                    >回复@{{comment.c_father_comment_user_name}}:</span>
-                    {{comment.c_text}}
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-btn
-                      text
-                      color="deep-purple accent-4"
-                      @click="replyComment(comment.c_user_name, comment.c_user_id)"
-                    >回复评论</v-btn>
-                  </v-card-actions>
-                </v-card>
+                <comment-area></comment-area>
               </v-tab-item>
             </v-tabs>
           </v-col>
@@ -92,21 +64,6 @@
             </div>
           </v-col>
         </v-row>
-        <!-- snackbar 提示框-->
-        <v-snackbar
-          v-model="snackbarInfo.snackbar"
-          :bottom="snackbarInfo.bottom"
-          :color="snackbarInfo.color"
-          :left="snackbarInfo.left"
-          :multi-line="snackbarInfo.multi_line"
-          :right="snackbarInfo.right"
-          :timeout="6000"
-          :top="snackbarInfo.top"
-          :vertical="snackbarInfo.vertical"
-        >
-          {{ snackbarInfo.text }}
-          <v-btn dark text @click="reload()">{{ snackbarInfo.buttonText }}</v-btn>
-        </v-snackbar>
       </v-container>
     </v-content>
   </div>
@@ -115,26 +72,17 @@
 <script>
 import axios from "axios";
 import navbar from "../../components/Navbar";
+import comment_area from "../../components/CommentArea"
 import { VueShowdown } from "vue-showdown";
 
 export default {
   inject: ["reload"],
   components: {
     navbar,
-    "vue-showdown": VueShowdown
+    "vue-showdown": VueShowdown,
+    "comment-area": comment_area
   },
   data: () => ({
-    snackbarInfo: {
-      snackbar: false,
-      bottom: false,
-      color: "success",
-      left: false,
-      multi_line: false,
-      right: false,
-      timeout: "6000",
-      top: false,
-      vertical: false
-    },
     // 词条信息
     title_en: null,
     article: {
@@ -151,19 +99,11 @@ export default {
     model_text: new Array(),
     // 用户信息
     user: {},
-    // 评论相关
-    is_login: sessionStorage.getItem("is_login"),
-    url: null,
-    comment: null,
-    comments: [],
-    comment_label: "在此处输入评论",
-    father_comment_id: null
   }),
   created() {
     this.getArticleInfo();
     this.getArticleLatestUpdateInfo();
     this.getInfoFromURL();
-    this.getCommentByURL();
   },
   methods: {
     test: function() {
@@ -285,53 +225,6 @@ export default {
           this.article.latest_edit_user_id = res.data["author_id"];
           var date = new Date(res.data["ah_edit_time"]);
           this.article.latest_edit_time = this.formatMsgTime(date.getTime());
-        });
-    },
-    // 评论相关
-    postComment: function() {
-      var postData = {
-        c_url: this.url,
-        c_text: this.comment,
-        c_user_id: sessionStorage.getItem("u_id"),
-        c_father_comment_id: this.father_comment_id
-      };
-      // console.info(postData);
-      axios
-        .post(this.GLOBAL.base_url + "/api/comments/", postData)
-        .then(response => {
-          //console.info(response);
-          if (response.data) {
-            this.snackbarInfo.text = "评论发送成功！";
-            this.snackbarInfo.buttonText = "确定";
-            this.snackbarInfo.color = "primary";
-            this.snackbarInfo.top = true;
-            this.snackbarInfo.vertical = true;
-            //this.snackbarInfo.refresh = true;
-            this.snackbarInfo.snackbar = true;
-          }
-        })
-        .catch(error => {
-          console.info(error);
-        });
-    },
-    replyComment: function(user_name, comment_id) {
-      this.$vuetify.goTo(0);
-      this.comment_label = "回复@" + user_name + ":";
-      this.father_comment_id = comment_id;
-    },
-    getCommentByURL: function() {
-      var url = this.$route.path;
-      if (url.charAt(url.length - 1) != "/") {
-        url = url + "/";
-      }
-      this.url = url;
-      // console.info(url);
-      axios
-        .get(this.GLOBAL.base_url + "/api/comments/?c_url=" + url)
-        .then(response => {
-          var comments = response.data;
-          this.comments = comments.reverse();
-          // console.info(comments);
         });
     },
     getInfoFromURL: function() {
