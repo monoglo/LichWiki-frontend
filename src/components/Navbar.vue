@@ -306,6 +306,7 @@ export default {
   created() {
     this.getSessionInfo();
     this.getInfoFromURL();
+    this.getUnreadNotificationsAmount();
   },
   methods: {
     test: function() {
@@ -334,7 +335,6 @@ export default {
         this.user.u_id = sessionStorage.getItem("u_id");
         this.user.u_name = sessionStorage.getItem("u_name");
         this.user.u_register_time = sessionStorage.getItem("u_register_time");
-        this.getUnreadNotificationsAmount();
       }
     },
     getInfoFromURL: function() {

@@ -63,7 +63,7 @@
                   </v-card>
                 </v-tab-item>
                 <v-tab-item>
-                  <comment-area></comment-area>
+                  <comment-area :user_center_u_id="user.u_id"></comment-area>
                 </v-tab-item>
               </v-tabs>
             </div>
@@ -111,7 +111,7 @@ export default {
       return Y + "年" + M + "月" + D + "日" + " " + time;
     },
     getInfoFromURL: function() {
-      this.user.u_name = this.$route.path.split("/")[2];
+      this.user.u_name = this.$route.params.user_name
     },
     getUserInfo: function() {
       axios
