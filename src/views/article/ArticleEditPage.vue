@@ -29,6 +29,33 @@
               ></markdown-editor>
               <br />
               <br />
+              <span>当前可用的模版：</span>
+              <v-simple-table fixed-header height="300px">
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th class="text-left">模版名</th>
+                      <th class="text-left">使用方法</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="item in model_list" :key="item.m_id">
+                      <td>
+                        <a @click="goModelPage(item.m_name)">{{ item.m_name }}</a>
+                      </td>
+                      <td>
+                        <strong>
+                          {<span>{{item.m_name}}</span>|参数}
+                        </strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+              <br />
+              <br />
+              <br />
+              <br />
             </v-card>
           </v-tab-item>
         </v-tabs>
@@ -73,6 +100,7 @@ export default {
       text: String(null),
       summary: null
     },
+    model_list: [],
     user: {
       is_login: false
     },
@@ -112,6 +140,21 @@ export default {
         this.user.u_register_time = sessionStorage.getItem("u_register_time");
       }
     },
+    goModelPage: function(model_name) {
+      this.$router.push({
+        path: "/model/" + this.$route.params['category_name'] + "/" + model_name
+      });
+      this.reload();
+    },
+    getAllSubjectsModels: function() {
+      axios
+        .get(this.GLOBAL.base_url + "/api/models/" + this.$route.params['category_name'])
+        .then(response => {
+          if (response.data.count > 0) {
+            this.model_list = response.data.results;
+          }
+        });
+    },
     goArticlePage: function() {
       if (this.snackbarInfo.color == "success") {
         this.$router.push({
@@ -140,6 +183,8 @@ export default {
           this.article.author_name = res.data["author_name"];
           this.article.title = res.data["a_title"];
           this.article.text = res.data["a_text"];
+
+          this.getAllSubjectsModels()
         });
     },
     postArticleEdit: function() {

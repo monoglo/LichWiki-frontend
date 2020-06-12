@@ -364,6 +364,7 @@ export default {
           "/" +
           this.search_bar
       });
+      this.reload();
     },
     goChildPage: function(url) {
       // 跳转到子页面
