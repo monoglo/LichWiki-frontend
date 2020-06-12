@@ -11,27 +11,35 @@
               <v-tab-item>
                 <v-card flat tile outlined style="padding: 0px 0px 0px 10px;">
                   <v-card-title class="display-2">模板: {{ model.name }}</v-card-title>
-                  <v-card-subtitle class="pb-0"><a @click="goUserPage(model.author_name)">{{ model.author_name }}</a> 于 {{ model.create_time }} ({{model.create_time_count}}) 创建了此模板</v-card-subtitle>
+                  <v-card-subtitle class="pb-0">
+                    <a @click="goUserPage(model.author_name)">{{ model.author_name }}</a>
+                    于 {{ model.create_time }} ({{model.create_time_count}}) 创建了此模板
+                  </v-card-subtitle>
                   <v-divider></v-divider>
                   <!-- <v-banner single-line><v-avatar slot="icon" color="blue lighten-1" size="40"><v-icon icon="mdi-tag-faces" color="white">mdi-tag-faces</v-icon></v-avatar>这篇文章需要改进。你可以帮助维基来编辑它。</v-banner> -->
 
                   <v-card-text class="text--primary">
                     <vue-showdown :markdown="model.text" vueTemplate emoji></vue-showdown>
                     <v-divider></v-divider>
-                    
-                    <v-divider></v-divider>
-                    使用方法:   <strong>{<span>{{model.name}}</span>|参数}</strong>
+
+                    <v-divider></v-divider>使用方法:
+                    <strong>
+                      {<span>{{model.name}}</span>|参数}
+                    </strong>
                   </v-card-text>
                 </v-card>
               </v-tab-item>
-              <v-tab-item></v-tab-item>
+              <v-tab-item><comment-area>
+                </comment-area></v-tab-item>
             </v-tabs>
           </v-col>
           <v-col>
             <div class="d-none d-sm-flex">
               <v-sheet class="elevation-2" style="width:100%;">
                 <v-toolbar dark>
-                  <v-toolbar-title>{<span>{{model.name}}</span>|参数}</v-toolbar-title>
+                  <v-toolbar-title>
+                    {<span>{{model.name}}</span>|参数}
+                  </v-toolbar-title>
                   <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-simple-table>
@@ -59,12 +67,14 @@
 import axios from "axios";
 import navbar from "../../components/Navbar";
 import { VueShowdown } from "vue-showdown";
+import comment_area from "../../components/CommentArea";
 
 export default {
   inject: ["reload"],
   components: {
     navbar,
-    "vue-showdown": VueShowdown
+    "vue-showdown": VueShowdown,
+    "comment-area": comment_area
   },
   data: () => ({
     model: {
@@ -80,39 +90,40 @@ export default {
   },
   methods: {
     timeParse: function(my_date_time) {
-      var date_time_split = my_date_time.split('T')
-      var date = date_time_split['0']
-      var time = date_time_split['1'].split('.')['0']
-      var Y = date.split('-')['0']
-      var M = date.split('-')['1']
-      var D = date.split('-')['2']
-      return Y+ "年" + M + "月" + D + "日" + " " +time
+      var date_time_split = my_date_time.split("T");
+      var date = date_time_split["0"];
+      var time = date_time_split["1"].split(".")["0"];
+      var Y = date.split("-")["0"];
+      var M = date.split("-")["1"];
+      var D = date.split("-")["2"];
+      return Y + "年" + M + "月" + D + "日" + " " + time;
     },
     goUserPage: function(user_name) {
       this.$router.push({
-        path:
-          "/user/" +
-          user_name
+        path: "/user/" + user_name
       });
     },
     getModelDetailInfo: function() {
       axios
         .get(
-          this.GLOBAL.base_url + "/api/models/" +
+          this.GLOBAL.base_url +
+            "/api/models/" +
             this.$route.params["category_name"] +
             "/" +
             this.$route.params["model_name"]
         )
         .then(response => {
           if (response.data) {
-            console.info(response.data)
+            console.info(response.data);
             this.model.id = response.data["m_id"];
             this.model.name = response.data["m_name"];
             this.model.text = response.data["m_text"];
             this.model.author_id = response.data["author_id"];
             this.model.author_name = response.data["author_name"];
-            this.model.create_time = this.timeParse(response.data["m_create_time"]);
-            var date = new Date(response.data["m_create_time"])
+            this.model.create_time = this.timeParse(
+              response.data["m_create_time"]
+            );
+            var date = new Date(response.data["m_create_time"]);
             this.model.create_time_count = this.formatMsgTime(date.getTime());
           }
         });

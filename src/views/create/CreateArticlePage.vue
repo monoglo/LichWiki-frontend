@@ -17,6 +17,7 @@
                   :rules="[v => !!v || '学科分类不能为空！']"
                   label="学科分类"
                   required
+                  @change="getAllSubjectsModels()"
                 ></v-select>
                 <v-text-field
                   label="词条名"
@@ -34,6 +35,31 @@
                 codeStyle="dark"
                 :editable="Boolean(this.user.is_login)"
               ></markdown-editor>
+              <br />
+              <br />
+              <span>当前可用的模版：</span>
+              <v-simple-table fixed-header height="300px">
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th class="text-left">模版名</th>
+                      <th class="text-left">使用方法</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="item in model_list" :key="item.m_id">
+                      <td>
+                        <a @click="goModelPage(item.m_name)">{{ item.m_name }}</a>
+                      </td>
+                      <td>
+                        <strong>
+                          {<span>{{item.m_name}}</span>|参数}
+                        </strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
               <br />
               <br />
             </v-card>
@@ -65,6 +91,7 @@ import navbar from "../../components/Navbar";
 import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 export default {
+  inject: ["reload"],
   components: {
     navbar,
     "markdown-editor": mavonEditor
@@ -75,9 +102,10 @@ export default {
     subjects_info: {},
     article: {
       name: null,
-      text: String(''),
+      text: String(""),
       subject_name: null
     },
+    model_list: [],
     user: {
       is_login: false
     },
@@ -117,6 +145,12 @@ export default {
         this.user.u_register_time = sessionStorage.getItem("u_register_time");
       }
     },
+    goModelPage: function(model_name) {
+      this.$router.push({
+        path: "/model/" + this.article.subject_name + "/" + model_name
+      });
+      this.reload();
+    },
     getAllSubjects: function() {
       axios.get(this.GLOBAL.base_url + "/api/subjects/").then(response => {
         if (response.data.results) {
@@ -129,6 +163,15 @@ export default {
           this.subjects = items;
         }
       });
+    },
+    getAllSubjectsModels: function() {
+      axios
+        .get(this.GLOBAL.base_url + "/api/models/" + this.article.subject_name)
+        .then(response => {
+          if (response.data.count > 0) {
+            this.model_list = response.data.results;
+          }
+        });
     },
     goArticlePage: function() {
       if (this.snackbarInfo.color == "success") {
@@ -176,7 +219,7 @@ export default {
             }
           })
           .catch(error => {
-            console.log(error)
+            console.log(error);
             this.snackbarInfo.text = "创建失败！连接错误或已经存在同名页面";
             this.snackbarInfo.buttonText = "确定";
             this.snackbarInfo.color = "error";
