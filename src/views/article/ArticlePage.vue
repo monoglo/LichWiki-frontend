@@ -233,7 +233,7 @@ export default {
     },
     renderModel: function() {
       let in_str = this.article.text;
-      let reg_expression = /\{(\w.*)\|([^}|]*)*\}/g;
+      let reg_expression = /\{(\w.*)\|([^}|]*)*\}/g; //$1 (\w.*)  $2 ([^}|]*)
       let results = [...in_str.matchAll(reg_expression)];
       for (var item in results) {
         if (!this.used_models.includes(results[item][1])) {

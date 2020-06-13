@@ -21,7 +21,7 @@
                   <v-card-text class="text--primary">
                     <vue-showdown :markdown="model.text" vueTemplate emoji></vue-showdown>
                     <v-divider></v-divider>
-
+                    模板源代码：{{model.text}}
                     <v-divider></v-divider>使用方法:
                     <strong>
                       {<span>{{model.name}}</span>|参数}
