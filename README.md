@@ -1,5 +1,5 @@
 # lichwiki - 大学维基
-
+![QQ截图20200522154220.png](https://i.loli.net/2020/06/15/qo3XLmVsU2RdxFr.png)
 - Vue.js
 - Vuetify UI库
 - axios
