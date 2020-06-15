@@ -1,23 +1,28 @@
-# lichwiki
+# lichwiki - 大学维基
 
-## Project setup
+- Vue.js
+- Vuetify UI库
+- axios
+- Django
+- Django Rest Framework
+
+[Django后端链接](https://github.com/monoglo/LichWiki-django)
+## Project setup 安装依赖
 ```
-yarn install
+npm run install
+```
+### Compiles and hot-reloads for development 编译热加载开发环境
+```
+npm run serve
+```
+### Compiles and minifies for production 编译生产环境
+```
+npm run build
 ```
 
-### Compiles and hot-reloads for development
+### Lints and fixes files Lint检查
 ```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
+npm run lint
 ```
 
 ### Customize configuration
