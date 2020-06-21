@@ -15,7 +15,7 @@ export default {
   methods: {
     goDirect: function() {
       this.$router.push({
-        path: "/article/高等数学/极限"
+        path: "/subject"
       });
     }
   }
