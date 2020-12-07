@@ -20,3 +20,6 @@ yarn-error.log*
 *.sln
 *.sw?
 dist.tar
+
+#Electron-builder output
+/dist_electron
