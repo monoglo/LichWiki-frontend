@@ -19,7 +19,7 @@
     "vue": "^2.6.11",
     "vue-router": "^3.3.4",
     "vue-showdown": "^2.4.1",
-    "vuetify": "^2.3.1"
+    "vuetify": "^2.6.10"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
